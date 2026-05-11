@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TabItem } from '@/store/tabs'
-import { Expand, Fold, House, User } from '@element-plus/icons-vue'
+import { Expand, Fold, User } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SidebarItem from '@/components/Sidebar/SidebarItem.vue'
@@ -78,23 +78,15 @@ watch(
   () => route.path,
   () => {
     if (route.name && route.meta?.title) {
-      tabsStore.addTab(route, (path: string) => router.push(path))
+      tabsStore.addTab(route)
       tabsStore.activeTabPath = route.path
     }
   },
   { immediate: true },
 )
 
-onMounted(async () => {
-  // 加载菜单树
-  await permissionStore.fetchMenuTree()
-
+onMounted(() => {
   document.addEventListener('click', handleOutsideClick)
-  // 初始化第一个 Tab
-  if (route.name && route.meta?.title) {
-    tabsStore.addTab(route, (path: string) => router.push(path))
-    tabsStore.activeTabPath = route.path
-  }
 })
 
 onUnmounted(() => {
@@ -119,13 +111,6 @@ onUnmounted(() => {
           active-text-color="#409EFF"
           :router="true"
         >
-          <!-- 首页固定项 -->
-          <el-menu-item index="/dashboard">
-            <el-icon><House /></el-icon>
-            <template #title>
-              首页
-            </template>
-          </el-menu-item>
           <!-- 动态菜单 -->
           <SidebarItem :menus="permissionStore.menuTree" />
         </el-menu>
@@ -181,7 +166,7 @@ onUnmounted(() => {
     </el-container>
 
     <!-- Tab 右键菜单 -->
-    <div v-if="contextMenuVisible" class="context-menu" :style="{ left: `${contextMenuX}px`, top: `${contextMenuY}px` }">
+    <div v-if="contextMenuVisible" class="context-menu" :style="{ left: `${contextMenuX}px`, top: `${contextMenuY}px` }" @click.stop>
       <div class="context-menu-item" @click="closeOtherTabs">
         关闭其他
       </div>

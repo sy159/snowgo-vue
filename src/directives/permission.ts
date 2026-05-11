@@ -17,4 +17,13 @@ export const vPermission: Directive = {
       el.parentNode?.removeChild(el)
     }
   },
+  updated(el: HTMLElement, binding: DirectiveBinding<string | string[]>) {
+    const userStore = useUserStore()
+    const perms = Array.isArray(binding.value) ? binding.value : [binding.value]
+
+    const hasPerm = perms.some(p => userStore.permissions.includes(p))
+    if (!hasPerm && el.parentNode) {
+      el.parentNode.removeChild(el)
+    }
+  },
 }
