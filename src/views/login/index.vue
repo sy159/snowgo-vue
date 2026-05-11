@@ -11,7 +11,6 @@ const userStore = useUserStore()
 
 const formRef = ref<FormInstance>()
 const loading = ref(false)
-const rememberMe = ref(false)
 const currentYear = new Date().getFullYear()
 
 const loginForm = reactive({
@@ -90,11 +89,6 @@ async function handleLogin(): Promise<void> {
             show-password
             @keyup.enter="handleLogin"
           />
-        </el-form-item>
-        <el-form-item class="form-options">
-          <el-checkbox v-model="rememberMe">
-            记住我
-          </el-checkbox>
         </el-form-item>
         <el-form-item>
           <el-button
@@ -249,10 +243,6 @@ async function handleLogin(): Promise<void> {
 
 :deep(.el-input__prefix-inner) {
   color: rgba(255, 255, 255, 0.6);
-}
-
-.form-options {
-  margin-bottom: 24px;
 }
 
 :deep(.el-checkbox__label) {

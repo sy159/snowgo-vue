@@ -210,7 +210,7 @@ onMounted(() => {
         <el-table-column prop="menu_type" label="类型" width="100" align="center">
           <template #default="{ row }">
             <el-tag
-              :type="row.menu_type === 'Dir' ? '' : row.menu_type === 'Menu' ? 'success' : 'warning'"
+              :type="row.menu_type === 'Dir' ? 'primary' : row.menu_type === 'Menu' ? 'success' : 'warning'"
               size="small"
             >
               {{ typeLabel(row.menu_type) }}

@@ -1,14 +1,8 @@
+import type { ApiResponse } from '@/types'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { getRefreshToken, getToken, removeToken, setToken } from '@/utils/storage'
-
-// 响应数据类型
-export interface ApiResponse<T = unknown> {
-  code: number
-  data: T
-  msg: string
-}
 
 // Token 刷新锁 + 请求队列
 let isRefreshing = false

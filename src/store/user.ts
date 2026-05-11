@@ -17,6 +17,9 @@ export const useUserStore = defineStore('user', () => {
     setToken(res.data.access_token, res.data.refresh_token, res.data.access_expire_timestamp, res.data.refresh_expire_timestamp)
     token.value = res.data.access_token
     await fetchUserInfo()
+    // 登录后立即加载菜单树
+    const { usePermissionStore } = await import('@/store')
+    await usePermissionStore().fetchMenuTree()
   }
 
   // 获取用户信息和权限

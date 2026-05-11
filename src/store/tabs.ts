@@ -19,7 +19,7 @@ export const useTabsStore = defineStore('tabs', () => {
   const tabPaths = computed(() => visitedTabs.value.map(tab => tab.path))
 
   // 添加 Tab
-  function addTab(route: RouteLocationNormalized, _routerPush: (path: string) => void): void {
+  function addTab(route: RouteLocationNormalized): void {
     if (!route.name || !route.meta?.title)
       return
 

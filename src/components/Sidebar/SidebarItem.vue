@@ -2,6 +2,8 @@
 import type { MenuInfo } from '@/api/account/menu'
 import { getIconComponent } from '@/utils/icons'
 
+defineOptions({ name: 'SidebarItem' })
+
 defineProps<{
   menus: MenuInfo[]
 }>()

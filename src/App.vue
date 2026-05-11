@@ -7,6 +7,7 @@ import { getToken } from '@/utils/storage'
 const userStore = useUserStore()
 const permissionStore = usePermissionStore()
 
+// 刷新页面时恢复用户信息和菜单
 onMounted(async () => {
   const token = getToken()
   if (token && !userStore.userInfo) {
@@ -15,13 +16,9 @@ onMounted(async () => {
       await permissionStore.fetchMenuTree()
     }
     catch {
-      // Token 无效或过期，清除状态并跳转登录
       userStore.resetState()
       router.push('/login')
     }
-  }
-  else if (token && permissionStore.menuTree.length === 0) {
-    await permissionStore.fetchMenuTree()
   }
 })
 </script>

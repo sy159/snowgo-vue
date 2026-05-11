@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { FormInstance, FormRules } from 'element-plus'
 import type { MenuInfo } from '@/api/account/menu'
 import type { RoleInfo, RoleListCondition, RoleParam } from '@/api/account/role'
 import { Plus, Refresh, Search } from '@element-plus/icons-vue'
@@ -74,143 +73,169 @@ function handleReset() {
 const dialogVisible = ref(false)
 const isEdit = ref(false)
 const submitting = ref(false)
-const formRef = ref<FormInstance>()
 const form = reactive<RoleParam>({
   name: '',
   code: '',
   description: '',
+  menu_ids: [],
 })
 
-const formRules: FormRules = {
+const formRules: Record<string, any> = {
   name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
   code: [{ required: true, message: '请输入角色编码', trigger: 'blur' }],
 }
 
-function handleAdd() {
+const menuTree = ref<MenuInfo[]>([])
+const menuTreeRef = ref()
+const menuLoading = ref(false)
+const checkedMenuIds = ref<number[]>([])
+
+/** 递归获取所有叶子节点 ID */
+function getLeafIds(nodes: MenuInfo[]): number[] {
+  const ids: number[] = []
+  for (const n of nodes) {
+    if (!n.children?.length) ids.push(n.id)
+    else ids.push(...getLeafIds(n.children))
+  }
+  return ids
+}
+
+/** 判断节点是否包含目标叶子节点中的任何一个 */
+function containsAnyLeaf(node: MenuInfo, leafSet: Set<number>): boolean {
+  if (!node.children?.length) return leafSet.has(node.id)
+  return node.children.some(c => containsAnyLeaf(c, leafSet))
+}
+
+/** 过滤出叶子节点（去掉只包含非叶子节点的父级，保留叶子父级） */
+function filterToLeafOnly(nodes: MenuInfo[], leafSet: Set<number>): MenuInfo[] {
+  const result: MenuInfo[] = []
+  for (const n of nodes) {
+    if (!n.children?.length) {
+      if (leafSet.has(n.id)) result.push({ ...n })
+    }
+    else {
+      const filteredChildren = filterToLeafOnly(n.children, leafSet)
+      if (filteredChildren.length) result.push({ ...n, children: filteredChildren })
+    }
+  }
+  return result
+}
+
+/** 过滤出当前用户有权限的菜单节点 */
+function filterByPermission(nodes: MenuInfo[]): MenuInfo[] {
+  const result: MenuInfo[] = []
+  for (const n of nodes) {
+    let filteredChildren: MenuInfo[] = []
+    if (n.children?.length) {
+      filteredChildren = filterByPermission(n.children)
+    }
+    const hasPerm = n.perms ? userStore.permissions.includes(n.perms) : filteredChildren.length > 0
+    if (hasPerm) {
+      result.push({ ...n, children: filteredChildren })
+    }
+  }
+  return result
+}
+
+async function loadMenuTree() {
+  menuLoading.value = true
+  try {
+    // 确保用户权限已加载
+    if (!userStore.permissions.length) {
+      await userStore.fetchUserInfo()
+    }
+    const res = await getMenuList()
+    // 过滤出当前用户有权限的菜单
+    menuTree.value = filterByPermission(res.data)
+  }
+  catch {
+    // 错误已由拦截器处理
+  }
+  finally {
+    menuLoading.value = false
+  }
+}
+
+async function handleAdd() {
   isEdit.value = false
+  Object.assign(form, {
+    id: undefined,
+    name: '',
+    code: '',
+    description: '',
+    menu_ids: [],
+  })
+  checkedMenuIds.value = []
+  await loadMenuTree()
   dialogVisible.value = true
 }
 
-function handleEdit(row: RoleInfo) {
+async function handleEdit(row: RoleInfo) {
   isEdit.value = true
   Object.assign(form, {
     id: row.id,
     name: row.name,
     code: row.code,
     description: row.description,
+    menu_ids: [],
   })
+  checkedMenuIds.value = []
+
+  // 先获取角色权限
+  try {
+    const res = await getRoleById(row.id)
+    if (res.data.menu_ids?.length) {
+      // 加载菜单树
+      await loadMenuTree()
+      // 从菜单树中找出所有叶子节点 ID
+      const allLeafIds = getLeafIds(menuTree.value)
+      const leafSet = new Set(allLeafIds)
+      // 只保留叶子节点 ID 作为默认勾选（避免父级 ID 导致级联全选）
+      checkedMenuIds.value = res.data.menu_ids.filter(id => leafSet.has(id))
+    }
+  }
+  catch {
+    // 错误已由拦截器处理
+  }
+
   dialogVisible.value = true
 }
 
 async function handleSubmit() {
-  if (!formRef.value)
+  // 非严格模式下：获取所有勾选节点（含父级联动产生的）
+  const checkedKeys = menuTreeRef.value?.getCheckedKeys() as number[]
+  const halfCheckedKeys = menuTreeRef.value?.getHalfCheckedKeys() as number[]
+  form.menu_ids = [...halfCheckedKeys, ...checkedKeys]
+
+  if (!form.name || !form.code) {
+    ElMessage.warning('请填写必填项')
     return
-  await formRef.value.validate(async (valid) => {
-    if (!valid)
-      return
-    submitting.value = true
-    try {
-      if (isEdit.value) {
-        await updateRole({ ...form })
-        ElMessage.success('更新成功')
-      }
-      else {
-        await createRole({ ...form })
-        ElMessage.success('创建成功')
-      }
-      dialogVisible.value = false
-      fetchData()
-    }
-    catch (_e: unknown) {
-      // 错误已由拦截器处理
-    }
-    finally {
-      submitting.value = false
-    }
-  })
-}
-
-function resetForm() {
-  formRef.value?.resetFields()
-  Object.assign(form, {
-    id: undefined,
-    name: '',
-    code: '',
-    description: '',
-  })
-}
-
-// ---- 权限分配 ----
-const permDialogVisible = ref(false)
-const permSubmitting = ref(false)
-const permLoading = ref(false)
-const permTarget = ref<RoleInfo | null>(null)
-const treeRef = ref()
-const menuTree = ref<MenuInfo[]>([])
-const checkedMenuIds = ref<number[]>([])
-
-// 加载菜单树
-async function loadMenuTree() {
-  permLoading.value = true
-  try {
-    const res = await getMenuList()
-    menuTree.value = res.data
   }
-  catch (_e: unknown) {
+
+  submitting.value = true
+  try {
+    if (isEdit.value) {
+      await updateRole({ ...form })
+      ElMessage.success('更新成功')
+    }
+    else {
+      await createRole({ ...form })
+      ElMessage.success('创建成功')
+    }
+    dialogVisible.value = false
+    fetchData()
+  }
+  catch {
     // 错误已由拦截器处理
   }
   finally {
-    permLoading.value = false
+    submitting.value = false
   }
 }
 
-// 打开权限分配
-async function handlePermAlloc(row: RoleInfo) {
-  permTarget.value = row
+function handleDialogClose() {
+  form.menu_ids = []
   checkedMenuIds.value = []
-  permDialogVisible.value = true
-  await loadMenuTree()
-  // 获取角色已有的菜单权限
-  try {
-    const res = await getRoleById(row.id)
-    if (res.data.menu_ids && res.data.menu_ids.length) {
-      checkedMenuIds.value = res.data.menu_ids
-      // 等待树渲染完成后设置选中
-      setTimeout(() => {
-        treeRef.value?.setCheckedKeys(res.data.menu_ids as number[])
-      }, 100)
-    }
-  }
-  catch (_e: unknown) {
-    // 错误已由拦截器处理
-  }
-}
-
-async function handlePermSubmit() {
-  if (!permTarget.value || !treeRef.value)
-    return
-  permSubmitting.value = true
-  try {
-    // 获取当前勾选的节点 ID（包含半选节点）
-    const checkedKeys = treeRef.value.getCheckedKeys() as number[]
-    const halfCheckedKeys = treeRef.value.getHalfCheckedKeys() as number[]
-    const menuIds = [...checkedKeys, ...halfCheckedKeys]
-
-    await updateRole({
-      id: permTarget.value.id,
-      name: permTarget.value.name,
-      code: permTarget.value.code,
-      menu_ids: menuIds,
-    })
-    ElMessage.success('权限分配成功')
-    permDialogVisible.value = false
-  }
-  catch (_e: unknown) {
-    // 错误已由拦截器处理
-  }
-  finally {
-    permSubmitting.value = false
-  }
 }
 
 // ---- 删除 ----
@@ -286,13 +311,10 @@ onMounted(() => {
         <el-table-column prop="code" label="角色编码" min-width="140" />
         <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
         <el-table-column prop="created_at" label="创建时间" width="180" />
-        <el-table-column v-if="userStore.hasPermission(['account:role:update', 'account:role:delete'])" label="操作" width="280" fixed="right">
+        <el-table-column v-if="userStore.hasPermission(['account:role:update', 'account:role:delete'])" label="操作" width="200" fixed="right">
           <template #default="{ row }">
             <el-button v-permission="'account:role:update'" link type="primary" size="small" @click="handleEdit(row)">
               编辑
-            </el-button>
-            <el-button v-permission="'account:role:update'" link type="warning" size="small" @click="handlePermAlloc(row)">
-              权限分配
             </el-button>
             <el-button v-permission="'account:role:delete'" link type="danger" size="small" @click="handleDelete(row)">
               删除
@@ -321,10 +343,9 @@ onMounted(() => {
       :title="isEdit ? '编辑角色' : '新增角色'"
       width="520px"
       destroy-on-close
-      @closed="resetForm"
+      @closed="handleDialogClose"
     >
       <el-form
-        ref="formRef"
         :model="form"
         :rules="formRules"
         label-width="80px"
@@ -344,49 +365,25 @@ onMounted(() => {
             placeholder="请输入角色描述"
           />
         </el-form-item>
+        <el-form-item label="菜单权限">
+          <div v-loading="menuLoading" style="width: 100%">
+            <el-tree
+              ref="menuTreeRef"
+              :data="menuTree"
+              :props="{ label: 'name', children: 'children' }"
+              node-key="id"
+              show-checkbox
+              :default-checked-keys="checkedMenuIds"
+              style="max-height: 260px; overflow-y: auto"
+            />
+          </div>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">
           取消
         </el-button>
         <el-button type="primary" :loading="submitting" @click="handleSubmit">
-          确定
-        </el-button>
-      </template>
-    </el-dialog>
-
-    <!-- 权限分配对话框 -->
-    <el-dialog
-      v-model="permDialogVisible"
-      title="权限分配"
-      width="480px"
-      destroy-on-close
-    >
-      <el-alert
-        v-if="permTarget"
-        :title="`为角色「${permTarget.name}」分配菜单权限`"
-        type="info"
-        show-icon
-        :closable="false"
-        style="margin-bottom: 16px"
-      />
-      <div v-loading="permLoading">
-        <el-tree
-          ref="treeRef"
-          :data="menuTree"
-          :props="{ label: 'name', children: 'children' }"
-          node-key="id"
-          show-checkbox
-          check-strictly
-          :default-checked-keys="checkedMenuIds"
-          style="max-height: 420px; overflow-y: auto"
-        />
-      </div>
-      <template #footer>
-        <el-button @click="permDialogVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" :loading="permSubmitting" @click="handlePermSubmit">
           确定
         </el-button>
       </template>
