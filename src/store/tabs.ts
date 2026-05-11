@@ -79,6 +79,13 @@ export const useTabsStore = defineStore('tabs', () => {
     setStorageItem(TABS_KEY, visitedTabs.value)
   }
 
+  // 清空所有 Tab
+  function clearTabs(): void {
+    visitedTabs.value = []
+    activeTabPath.value = ''
+    setStorageItem(TABS_KEY, [])
+  }
+
   return {
     visitedTabs,
     activeTabPath,
@@ -86,5 +93,6 @@ export const useTabsStore = defineStore('tabs', () => {
     removeTab,
     closeOtherTabs,
     closeRightTabs,
+    clearTabs,
   }
 })
