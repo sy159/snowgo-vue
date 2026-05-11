@@ -7,14 +7,29 @@ import { onMounted, reactive, ref } from 'vue'
 import {
   createUser,
   deleteUserById,
+  getUserById,
   getUserList,
   resetPwdById,
   updateUser,
 
 } from '@/api/account/user'
+import { getRoleList } from '@/api/account/role'
 import { useUserStore } from '@/store'
 
 const userStore = useUserStore()
+
+// 角色列表
+const roleOptions = ref<Array<{ id: number; name: string; code: string }>>([])
+
+async function loadRoleOptions() {
+  try {
+    const res = await getRoleList({ offset: 0, limit: 100 })
+    roleOptions.value = res.data.list
+  }
+  catch {
+    // 错误已由拦截器处理
+  }
+}
 
 // 搜索条件
 const searchForm = reactive({
@@ -123,7 +138,7 @@ function handleAdd() {
   dialogVisible.value = true
 }
 
-function handleEdit(row: UserInfo) {
+async function handleEdit(row: UserInfo) {
   isEdit.value = true
   Object.assign(form, {
     id: row.id,
@@ -136,6 +151,14 @@ function handleEdit(row: UserInfo) {
     status: row.status,
     role_ids: [],
   })
+  // 列表接口不返回 role_list，需要通过详情接口获取
+  try {
+    const res = await getUserById(row.id)
+    form.role_ids = res.data.role_list?.map(r => r.id) || []
+  }
+  catch {
+    // 错误已由拦截器处理
+  }
   dialogVisible.value = true
 }
 
@@ -265,6 +288,7 @@ async function handleDelete(row: UserInfo) {
 
 onMounted(() => {
   fetchData()
+  loadRoleOptions()
 })
 </script>
 
@@ -410,6 +434,16 @@ onMounted(() => {
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" type="textarea" :rows="3" placeholder="请输入备注" />
         </el-form-item>
+        <el-form-item label="角色">
+          <el-select v-model="form.role_ids" multiple placeholder="请选择角色" style="width: 100%">
+            <el-option
+              v-for="role in roleOptions"
+              :key="role.id"
+              :label="role.name"
+              :value="role.id"
+            />
+          </el-select>
+        </el-form-item>
       </el-form>
       <template #footer>
         <el-button @click="dialogVisible = false">
@@ -488,4 +522,5 @@ onMounted(() => {
   justify-content: flex-end;
   margin-top: 16px;
 }
+
 </style>
