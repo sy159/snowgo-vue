@@ -31,8 +31,10 @@ export interface UserList {
 
 // 用户列表查询条件
 export interface UserListCondition {
+  ids?: number[]
   username?: string
   tel?: string
+  nickname?: string
   status?: number
   offset: number
   limit: number

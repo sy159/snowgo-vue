@@ -34,6 +34,7 @@ async function loadRoleOptions() {
 // 搜索条件
 const searchForm = reactive({
   username: '',
+  nickname: '',
   tel: '',
   status: undefined as number | undefined,
 })
@@ -55,6 +56,7 @@ async function fetchData() {
   try {
     const params = {
       username: searchForm.username || undefined,
+      nickname: searchForm.nickname || undefined,
       tel: searchForm.tel || undefined,
       status: searchForm.status,
       offset: (pagination.page - 1) * pagination.pageSize,
@@ -81,6 +83,7 @@ function handleSearch() {
 // 重置搜索
 function handleReset() {
   searchForm.username = ''
+  searchForm.nickname = ''
   searchForm.tel = ''
   searchForm.status = undefined
   handleSearch()
@@ -301,6 +304,15 @@ onMounted(() => {
           <el-input
             v-model="searchForm.username"
             placeholder="请输入用户名"
+            clearable
+            style="width: 180px"
+            @keyup.enter="handleSearch"
+          />
+        </el-form-item>
+        <el-form-item label="昵称">
+          <el-input
+            v-model="searchForm.nickname"
+            placeholder="请输入昵称"
             clearable
             style="width: 180px"
             @keyup.enter="handleSearch"
