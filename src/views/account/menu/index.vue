@@ -40,13 +40,55 @@ async function fetchData() {
   }
 }
 
-// 菜单树选项（用于 el-tree-select）
+// 菜单树选项（用于 el-tree-select，包含根节点）
+interface MenuTreeNode extends MenuInfo {
+  menu_type: 'Dir' | 'Menu' | 'Btn' | 'Root'
+}
 const menuTreeOptions = computed(() => {
+  // 递归过滤掉按钮类型的节点，按钮不能作为上级菜单
+  function filterBtnNodes(nodes: MenuInfo[]): MenuInfo[] {
+    return nodes
+      .filter(n => n.menu_type !== 'Btn')
+      .map(n => ({
+        ...n,
+        children: n.children ? filterBtnNodes(n.children) : [],
+      }))
+  }
+  const filtered = filterBtnNodes(tableData.value)
   // 添加根节点选项
   return [
-    { id: 0, name: '根目录', children: tableData.value },
-  ] as MenuInfo[]
+    { id: 0, name: '根目录', menu_type: 'Root', children: filtered } as MenuTreeNode,
+  ]
 })
+
+// 根据选中的上级菜单，返回当前菜单可选的类型
+const availableMenuTypes = computed((): ('Dir' | 'Menu' | 'Btn')[] => {
+  if (form.parent_id === 0) return ['Dir', 'Menu']
+  // 找到选中的父节点类型
+  function findNode(nodes: MenuInfo[], id: number): MenuInfo | null {
+    for (const n of nodes) {
+      if (n.id === id) return n
+      if (n.children) {
+        const found = findNode(n.children, id)
+        if (found) return found
+      }
+    }
+    return null
+  }
+  const parent = findNode(tableData.value, form.parent_id)
+  if (!parent) return ['Dir', 'Menu']
+  if (parent.menu_type === 'Dir') return ['Dir', 'Menu']
+  if (parent.menu_type === 'Menu') return ['Btn']
+  return ['Dir', 'Menu']
+})
+
+// 当上级菜单切换时，自动修正菜单类型
+function onParentChange(): void {
+  if (!availableMenuTypes.value.includes(form.menu_type as 'Dir' | 'Menu' | 'Btn')) {
+    form.menu_type = availableMenuTypes.value[0]
+    formRules.value = buildFormRules()
+  }
+}
 
 // ---- 新增/编辑 ----
 const dialogVisible = ref(false)
@@ -265,17 +307,18 @@ onMounted(() => {
             placeholder="根目录"
             clearable
             style="width: 100%"
+            @change="onParentChange"
           />
         </el-form-item>
         <el-form-item label="菜单类型" prop="menu_type">
           <el-radio-group v-model="form.menu_type">
-            <el-radio value="Dir">
+            <el-radio value="Dir" :disabled="!availableMenuTypes.includes('Dir')">
               目录
             </el-radio>
-            <el-radio value="Menu">
+            <el-radio value="Menu" :disabled="!availableMenuTypes.includes('Menu')">
               菜单
             </el-radio>
-            <el-radio value="Btn">
+            <el-radio value="Btn" :disabled="!availableMenuTypes.includes('Btn')">
               按钮
             </el-radio>
           </el-radio-group>
