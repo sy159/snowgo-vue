@@ -33,6 +33,7 @@ async function loadRoleOptions() {
 
 // 搜索条件
 const searchForm = reactive({
+  ids: '',
   username: '',
   nickname: '',
   tel: '',
@@ -54,7 +55,11 @@ const loading = ref(false)
 async function fetchData() {
   loading.value = true
   try {
+    const ids = searchForm.ids
+      ? searchForm.ids.split(',').map(s => Number(s.trim())).filter(n => !Number.isNaN(n))
+      : undefined
     const params = {
+      ids,
       username: searchForm.username || undefined,
       nickname: searchForm.nickname || undefined,
       tel: searchForm.tel || undefined,
@@ -82,6 +87,7 @@ function handleSearch() {
 
 // 重置搜索
 function handleReset() {
+  searchForm.ids = ''
   searchForm.username = ''
   searchForm.nickname = ''
   searchForm.tel = ''
@@ -300,6 +306,15 @@ onMounted(() => {
     <!-- 搜索表单 -->
     <el-card shadow="never" class="search-card">
       <el-form :model="searchForm" inline @submit.prevent="handleSearch">
+        <el-form-item label="用户ID">
+          <el-input
+            v-model="searchForm.ids"
+            placeholder="多个ID用逗号分隔"
+            clearable
+            style="width: 160px"
+            @keyup.enter="handleSearch"
+          />
+        </el-form-item>
         <el-form-item label="用户名">
           <el-input
             v-model="searchForm.username"
