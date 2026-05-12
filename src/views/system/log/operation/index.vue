@@ -242,6 +242,13 @@ onMounted(() => {
 
 .search-form {
   margin-bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.search-form :deep(.el-form-item:last-child) {
+  margin-left: auto;
 }
 
 .pagination-wrapper {

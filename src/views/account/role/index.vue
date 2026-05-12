@@ -264,7 +264,7 @@ onMounted(() => {
   <div class="role-management">
     <!-- 搜索表单 -->
     <el-card shadow="never" class="search-card">
-      <el-form :model="searchForm" inline @submit.prevent="handleSearch">
+      <el-form :model="searchForm" inline class="search-form" @submit.prevent="handleSearch">
         <el-form-item label="角色名称">
           <el-input
             v-model="searchForm.name"
@@ -398,6 +398,16 @@ onMounted(() => {
 
 .search-card {
   margin-bottom: 16px;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.search-form :deep(.el-form-item:last-child) {
+  margin-left: auto;
 }
 
 .card-header {
