@@ -1,0 +1,101 @@
+:root {
+  /* ===== Primary Colors ===== */
+  --el-color-primary: var(--color-primary-500);
+  --el-color-primary-light-3: var(--color-primary-300);
+  --el-color-primary-light-5: var(--color-primary-200);
+  --el-color-primary-light-7: var(--color-primary-100);
+  --el-color-primary-light-8: var(--color-primary-50);
+  --el-color-primary-light-9: var(--color-primary-50);
+  --el-color-primary-dark-2: var(--color-primary-600);
+
+  /* ===== Success ===== */
+  --el-color-success: var(--color-success-500);
+  --el-color-success-light-3: #86efac;
+  --el-color-success-light-5: #bbf7d0;
+  --el-color-success-light-9: var(--color-success-50);
+  --el-color-success-dark-2: var(--color-success-600);
+
+  /* ===== Warning ===== */
+  --el-color-warning: var(--color-warning-500);
+  --el-color-warning-light-3: #fcd34d;
+  --el-color-warning-light-5: #fde68a;
+  --el-color-warning-light-9: var(--color-warning-50);
+  --el-color-warning-dark-2: var(--color-warning-600);
+
+  /* ===== Danger ===== */
+  --el-color-danger: var(--color-danger-500);
+  --el-color-danger-light-3: #fca5a5;
+  --el-color-danger-light-5: #fecaca;
+  --el-color-danger-light-9: var(--color-danger-50);
+  --el-color-danger-dark-2: var(--color-danger-600);
+
+  /* ===== Info ===== */
+  --el-color-info: var(--color-info-500);
+  --el-color-info-light-3: #94a3b8;
+  --el-color-info-light-5: #cbd5e1;
+  --el-color-info-light-9: var(--color-info-50);
+  --el-color-info-dark-2: var(--color-info-600);
+
+  /* ===== Backgrounds ===== */
+  --el-bg-color: #ffffff;
+  --el-bg-color-page: var(--bg-page);
+  --el-bg-color-overlay: #ffffff;
+
+  /* ===== Border Radius ===== */
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 4px;
+  --el-border-radius-round: 9999px;
+
+  /* ===== Border Colors ===== */
+  --el-border-color: var(--color-gray-200);
+  --el-border-color-light: var(--color-gray-200);
+  --el-border-color-lighter: var(--color-gray-100);
+  --el-border-color-extra-light: var(--color-gray-50);
+  --el-border-color-hover: var(--color-gray-300);
+
+  /* ===== Text Colors ===== */
+  --el-text-color-primary: var(--color-gray-900);
+  --el-text-color-regular: var(--color-gray-600);
+  --el-text-color-secondary: var(--color-gray-500);
+  --el-text-color-placeholder: var(--color-gray-400);
+  --el-text-color-disabled: var(--color-gray-300);
+
+  /* ===== Fill Colors ===== */
+  --el-fill-color: var(--color-gray-100);
+  --el-fill-color-light: var(--color-gray-50);
+  --el-fill-color-lighter: var(--color-gray-25);
+  --el-fill-color-blank: #ffffff;
+  --el-fill-color-dark: var(--color-gray-200);
+
+  /* ===== Shadows ===== */
+  --el-box-shadow: var(--shadow-md);
+  --el-box-shadow-light: var(--shadow-sm);
+  --el-box-shadow-lighter: 0 0 4px rgba(0, 0, 0, 0.04);
+  --el-box-shadow-dark: var(--shadow-xl);
+
+  /* ===== Menu (Sidebar) ===== */
+  --el-menu-bg-color: var(--bg-sidebar);
+  --el-menu-text-color: var(--text-sidebar);
+  --el-menu-active-color: var(--text-sidebar-active);
+  --el-menu-hover-text-color: var(--text-sidebar-active);
+  --el-menu-hover-bg-color: var(--bg-sidebar-hover);
+  --el-menu-item-hover-fill: var(--bg-sidebar-hover);
+  --el-menu-border-color: transparent;
+  --el-menu-base-level-padding: 16px;
+  --el-menu-level-padding: 16px;
+  --el-menu-item-height: 44px;
+
+  /* ===== Card ===== */
+  --el-card-bg-color: var(--bg-surface);
+
+  /* ===== Input ===== */
+  --el-input-bg-color: #ffffff;
+  --el-input-hover-border-color: var(--color-gray-300);
+  --el-input-focus-border-color: var(--color-primary-500);
+
+  /* ===== Button ===== */
+  --el-button-font-weight: 500;
+
+  /* ===== Dialog ===== */
+  --el-dialog-padding-primary: 24px;
+}
