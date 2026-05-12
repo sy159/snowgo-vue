@@ -104,6 +104,10 @@ npm run preview
 | 操作日志 | system/log/operation | 查询条件筛选、表格分页、展开查看前后数据快照 |
 | 登录日志 | system/log/login | 查询条件筛选、表格分页 |
 
+## 相关项目
+
+- 后端 API 服务：[snowgo](https://github.com/sy159/snowgo) — 基于 Spring Boot 的企业管理后台后端
+
 ## 后端接口
 
 后端 API 服务地址：`http://localhost:8000`
