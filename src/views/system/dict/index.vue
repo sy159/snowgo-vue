@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
 import type { DictInfo, DictItemParam, DictParam, ItemInfo } from '@/api/system/dict'
-import { ArrowLeft, Plus } from '@element-plus/icons-vue'
+import { ArrowLeft, Plus, Refresh, Search } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
 import {
@@ -28,10 +28,33 @@ const pagination = reactive({
   total: 0,
 })
 
+// 搜索条件
+const searchForm = reactive({
+  name: '',
+  code: '',
+})
+
+function handleSearch() {
+  pagination.page = 1
+  fetchDictList()
+}
+
+function handleReset() {
+  searchForm.name = ''
+  searchForm.code = ''
+  pagination.page = 1
+  fetchDictList()
+}
+
 async function fetchDictList() {
   dictLoading.value = true
   try {
-    const res = await getDictList({ offset: (pagination.page - 1) * pagination.pageSize, limit: pagination.pageSize })
+    const res = await getDictList({
+      name: searchForm.name || undefined,
+      code: searchForm.code || undefined,
+      offset: (pagination.page - 1) * pagination.pageSize,
+      limit: pagination.pageSize,
+    })
     dictList.value = res.data.list
     pagination.total = res.data.total
   }
@@ -287,14 +310,43 @@ onMounted(() => {
     <!-- 视图一：字典列表 -->
     <template v-if="!selectedDict">
       <el-card shadow="never" class="table-card">
-        <template #header>
-          <div class="card-header">
-            <span>字典列表</span>
-            <el-button v-permission="'system:dict:create'" type="primary" @click="openAddDict">
-              <el-icon><Plus /></el-icon>新增字典
+        <!-- 搜索表单 -->
+        <el-form :model="searchForm" inline @submit.prevent="handleSearch">
+          <el-form-item label="字典名称">
+            <el-input
+              v-model="searchForm.name"
+              placeholder="请输入字典名称"
+              clearable
+              style="width: 180px"
+              @keyup.enter="handleSearch"
+            />
+          </el-form-item>
+          <el-form-item label="字典编码">
+            <el-input
+              v-model="searchForm.code"
+              placeholder="请输入字典编码"
+              clearable
+              style="width: 180px"
+              @keyup.enter="handleSearch"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">
+              <el-icon><Search /></el-icon>查询
             </el-button>
-          </div>
-        </template>
+            <el-button @click="handleReset">
+              <el-icon><Refresh /></el-icon>重置
+            </el-button>
+          </el-form-item>
+        </el-form>
+
+        <!-- 工具栏 -->
+        <div class="card-header">
+          <span>字典列表</span>
+          <el-button v-permission="'system:dict:create'" type="primary" @click="openAddDict">
+            <el-icon><Plus /></el-icon>新增字典
+          </el-button>
+        </div>
 
         <el-table v-loading="dictLoading" :data="dictList" stripe border style="width: 100%">
           <el-table-column label="字典编码" min-width="180">
