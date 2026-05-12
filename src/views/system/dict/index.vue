@@ -532,6 +532,17 @@ onMounted(() => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 16px 0;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.search-form :deep(.el-form-item:last-child) {
+  margin-left: auto;
 }
 
 .header-left {

@@ -305,7 +305,7 @@ onMounted(() => {
   <div class="user-management">
     <!-- 搜索表单 -->
     <el-card shadow="never" class="search-card">
-      <el-form :model="searchForm" inline @submit.prevent="handleSearch">
+      <el-form :model="searchForm" inline class="search-form" @submit.prevent="handleSearch">
         <el-form-item label="用户ID">
           <el-input
             v-model="searchForm.ids"
@@ -358,8 +358,6 @@ onMounted(() => {
         </el-form-item>
       </el-form>
     </el-card>
-
-    <!-- 工具栏 & 表格 -->
     <el-card shadow="never" class="table-card">
       <template #header>
         <div class="card-header">
@@ -534,6 +532,16 @@ onMounted(() => {
 
 .search-card {
   margin-bottom: 16px;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.search-form :deep(.el-form-item:last-child) {
+  margin-left: auto;
 }
 
 .card-header {
