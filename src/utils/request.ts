@@ -52,12 +52,25 @@ class Request {
   }
 
   private setupInterceptors(): void {
-    // 请求拦截器：注入 token
+    // 请求拦截器：注入 token + 序列化数组参数为重复形式 (ids=1&ids=2)
     this.instance.interceptors.request.use(
       (config) => {
         const token = getToken()
         if (token) {
           config.headers.Authorization = `Bearer ${token}`
+        }
+        // 自定义数组序列化：ids=[1,2] → ids=1&ids=2 (而非默认的 ids[]=1&ids[]=2)
+        if (config.params && typeof config.params === 'object') {
+          const parts: string[] = []
+          for (const [key, value] of Object.entries(config.params)) {
+            if (Array.isArray(value)) {
+              value.forEach(v => parts.push(`${key}=${encodeURIComponent(String(v))}`))
+            }
+            else if (value !== undefined && value !== null && value !== '') {
+              parts.push(`${key}=${encodeURIComponent(String(value))}`)
+            }
+          }
+          config.paramsSerializer = () => parts.join('&')
         }
         return config
       },
