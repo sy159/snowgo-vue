@@ -237,24 +237,7 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .operation-log-page {
-  padding: 20px;
-}
-
-.search-form {
-  margin-bottom: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 12px;
-}
-
-.search-form :deep(.el-form-item:last-child) {
-  margin-left: auto;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
+  padding: var(--space-6);
 }
 
 .expand-content {
@@ -270,7 +253,7 @@ onMounted(() => {
   h4 {
     margin: 0 0 8px;
     font-size: 14px;
-    color: #606266;
+    color: var(--text-secondary);
     font-weight: 600;
   }
 }
@@ -278,11 +261,11 @@ onMounted(() => {
 .json-block {
   margin: 0;
   padding: 12px;
-  background-color: #f5f7fa;
-  border-radius: 4px;
-  font-size: 12px;
+  background-color: var(--color-gray-100);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
   line-height: 1.6;
-  color: #303133;
+  color: var(--text-primary);
   white-space: pre-wrap;
   word-break: break-all;
   max-height: 400px;

@@ -359,18 +359,10 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .menu-management {
-  padding: 20px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 600;
+  padding: var(--space-6);
 }
 
 .text-muted {
-  color: #c0c4cc;
+  color: var(--text-tertiary);
 }
 </style>

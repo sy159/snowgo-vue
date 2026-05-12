@@ -1,15 +1,30 @@
-/* 全局重置 */
+/* ===== Box Sizing ===== */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ===== Reset ===== */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
 }
 
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--text-primary);
+  background-color: var(--bg-page);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 #app {
   height: 100%;
 }
 
-/* 滚动条样式 */
+/* ===== Scrollbar ===== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

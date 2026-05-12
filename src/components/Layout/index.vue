@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { TabItem } from '@/store/tabs'
+import type { RouteLocationMatched } from 'vue-router'
 import { Expand, Fold, User } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -15,6 +16,31 @@ const permissionStore = usePermissionStore()
 const isCollapse = ref(false)
 
 const activeMenu = computed(() => route.path)
+
+// 面包屑：根据菜单树查找父级
+const breadcrumbs = computed(() => {
+  const currentTitle = route.meta?.title as string
+  if (!currentTitle) return []
+
+  const crumbs: string[] = []
+
+  // 递归查找父级
+  function findParent(items: any[], targetTitle: string, path: string[] = []): string[] | null {
+    for (const item of items) {
+      if (item.name === targetTitle) {
+        return [...path, item.name]
+      }
+      if (item.children) {
+        const found = findParent(item.children, targetTitle, [...path, item.name])
+        if (found) return found
+      }
+    }
+    return null
+  }
+
+  const result = findParent(permissionStore.menuTree, currentTitle)
+  return result || [currentTitle]
+})
 
 const displayName = computed(() => {
   if (userStore.userInfo) {
@@ -106,9 +132,6 @@ onUnmounted(() => {
         <el-menu
           :default-active="activeMenu"
           :collapse="isCollapse"
-          background-color="#304156"
-          text-color="#bfcbd9"
-          active-text-color="#409EFF"
           :router="true"
         >
           <!-- 动态菜单 -->
@@ -124,6 +147,17 @@ onUnmounted(() => {
               <Fold v-if="!isCollapse" />
               <Expand v-else />
             </el-icon>
+            <div class="breadcrumb">
+              <template v-for="(item, index) in breadcrumbs" :key="index">
+                <span v-if="index > 0" class="breadcrumb-separator">/</span>
+                <span
+                  class="breadcrumb-item"
+                  :class="{ 'breadcrumb-item-active': index === breadcrumbs.length - 1 }"
+                >
+                  {{ item }}
+                </span>
+              </template>
+            </div>
           </div>
           <div class="header-right">
             <el-dropdown @command="handleCommand">
@@ -187,39 +221,49 @@ onUnmounted(() => {
 }
 
 .sidebar {
-  background-color: #304156;
   transition: width 0.3s;
   overflow: hidden;
 }
 
 .logo {
-  height: 60px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
-  font-size: 20px;
-  font-weight: bold;
-  border-bottom: 1px solid #1f2d3d;
 }
 
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 21, 41, 0.08);
-  padding: 0 20px;
+  height: 56px;
 }
 
 .header-left {
   display: flex;
   align-items: center;
+  gap: 12px;
 }
 
-.collapse-btn {
-  font-size: 20px;
-  cursor: pointer;
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.breadcrumb-separator {
+  color: #9ca3af;
+  margin: 0 2px;
+}
+
+.breadcrumb-item {
+  color: #6b7280;
+}
+
+.breadcrumb-item-active {
+  color: #111827;
+  font-weight: 500;
 }
 
 .header-right {
@@ -231,38 +275,22 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 6px;
-  cursor: pointer;
+  font-size: 14px;
 }
 
 .tabs-bar {
   display: flex;
   align-items: center;
-  padding: 4px 10px;
-  background: #fff;
-  border-bottom: 1px solid #e4e7ed;
-  gap: 4px;
-  overflow-x: auto;
-}
-
-.tab-item {
-  cursor: pointer;
-  margin-right: 4px;
+  gap: 8px;
 }
 
 .main {
-  background: #f0f2f5;
-  padding: 20px;
+  overflow-y: auto;
 }
 
 .context-menu {
   position: fixed;
-  background: #fff;
-  border: 1px solid #e4e7ed;
-  border-radius: 4px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
   z-index: 9999;
-  padding: 4px 0;
-  min-width: 120px;
 }
 
 .context-menu-item {

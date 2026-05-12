@@ -393,34 +393,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .role-management {
-  padding: 20px;
-}
-
-.search-card {
-  margin-bottom: 16px;
-}
-
-.search-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 12px;
-}
-
-.search-form :deep(.el-form-item:last-child) {
-  margin-left: auto;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 16px;
-  font-weight: 600;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
+  padding: var(--space-6);
 }
 </style>

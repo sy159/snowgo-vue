@@ -159,31 +159,14 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .login-log-page {
-  padding: 20px;
-}
-
-.search-form {
-  margin-bottom: 12px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 12px;
-}
-
-.search-form :deep(.el-form-item:last-child) {
-  margin-left: auto;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
+  padding: var(--space-6);
 }
 
 .msg-success {
-  color: #67c23a;
+  color: var(--color-success-600);
 }
 
 .msg-fail {
-  color: #f56c6c;
+  color: var(--color-danger-600);
 }
 </style>

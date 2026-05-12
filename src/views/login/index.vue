@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
-import { Lock, Monitor, User } from '@element-plus/icons-vue'
+import { Lock, User } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -47,267 +47,307 @@ async function handleLogin(): Promise<void> {
 
 <template>
   <div class="login-container">
-    <!-- 背景装饰 -->
-    <div class="login-bg">
-      <div class="bg-shape shape-1" />
-      <div class="bg-shape shape-2" />
-      <div class="bg-shape shape-3" />
-    </div>
-
-    <div class="login-card">
-      <div class="login-header">
-        <div class="logo-icon">
-          <el-icon :size="28">
-            <Monitor />
-          </el-icon>
-        </div>
-        <h2 class="login-title">
+    <!-- 左侧品牌区域 -->
+    <div class="login-brand">
+      <div class="brand-content">
+        <h1 class="brand-title">
           SnowGo
-        </h2>
-        <p class="login-subtitle">
+        </h1>
+        <p class="brand-subtitle">
           企业管理后台
         </p>
+        <div class="brand-features">
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            </div>
+            <span>安全可靠的权限管理</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                <line x1="3" y1="9" x2="21" y2="9" />
+                <line x1="9" y1="21" x2="9" y2="9" />
+              </svg>
+            </div>
+            <span>灵活的菜单与字典配置</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+              </svg>
+            </div>
+            <span>完整的操作日志追踪</span>
+          </div>
+        </div>
       </div>
+    </div>
 
-      <el-form ref="formRef" :model="loginForm" :rules="rules" @submit.prevent="handleLogin">
-        <el-form-item prop="username">
-          <el-input
-            v-model="loginForm.username"
-            placeholder="用户名"
-            size="large"
-            :prefix-icon="User"
-            @keyup.enter="handleLogin"
-          />
-        </el-form-item>
-        <el-form-item prop="password">
-          <el-input
-            v-model="loginForm.password"
-            type="password"
-            placeholder="密码"
-            size="large"
-            :prefix-icon="Lock"
-            show-password
-            @keyup.enter="handleLogin"
-          />
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            type="primary"
-            size="large"
-            class="login-btn"
-            :loading="loading"
-            native-type="submit"
-          >
-            登 录
-          </el-button>
-        </el-form-item>
-      </el-form>
+    <!-- 右侧登录表单 -->
+    <div class="login-form-wrapper">
+      <div class="login-form-card">
+        <div class="form-header">
+          <h2 class="form-title">
+            欢迎登录
+          </h2>
+          <p class="form-subtitle">
+            请输入您的账号信息
+          </p>
+        </div>
 
-      <div class="login-footer">
-        <p>© {{ currentYear }} SnowGo. All rights reserved.</p>
+        <el-form ref="formRef" :model="loginForm" :rules="rules" class="login-form" @submit.prevent="handleLogin">
+          <el-form-item prop="username">
+            <div class="form-label">
+              用户名
+            </div>
+            <el-input
+              v-model="loginForm.username"
+              placeholder="请输入用户名"
+              size="large"
+              :prefix-icon="User"
+              @keyup.enter="handleLogin"
+            />
+          </el-form-item>
+          <el-form-item prop="password">
+            <div class="form-label">
+              密码
+            </div>
+            <el-input
+              v-model="loginForm.password"
+              type="password"
+              placeholder="请输入密码"
+              size="large"
+              :prefix-icon="Lock"
+              show-password
+              @keyup.enter="handleLogin"
+            />
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              size="large"
+              class="login-btn"
+              :loading="loading"
+              native-type="submit"
+            >
+              登 录
+            </el-button>
+          </el-form-item>
+        </el-form>
+
+        <div class="form-footer">
+          <p>© {{ currentYear }} SnowGo. All rights reserved.</p>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .login-container {
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
-  position: relative;
-  overflow: hidden;
+  background: var(--bg-page);
 }
 
-/* 背景装饰 */
-.login-bg {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-.bg-shape {
-  position: absolute;
-  border-radius: 50%;
-  opacity: 0.08;
-  background: linear-gradient(135deg, #409EFF, #36cfc9);
-}
-
-.shape-1 {
-  width: 600px;
-  height: 600px;
-  top: -200px;
-  right: -100px;
-  animation: float 20s ease-in-out infinite;
-}
-
-.shape-2 {
-  width: 400px;
-  height: 400px;
-  bottom: -150px;
-  left: -50px;
-  animation: float 15s ease-in-out infinite reverse;
-}
-
-.shape-3 {
-  width: 200px;
-  height: 200px;
-  top: 50%;
-  left: 20%;
-  animation: float 12s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-30px) rotate(5deg); }
-}
-
-/* 登录卡片 */
-.login-card {
-  width: 420px;
-  padding: 48px 40px;
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.3),
-    0 2px 8px rgba(0, 0, 0, 0.2);
-  position: relative;
-  z-index: 1;
-}
-
-/* 头部 */
-.login-header {
-  text-align: center;
-  margin-bottom: 36px;
-}
-
-.logo-icon {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 16px;
+/* ===== 左侧品牌区域 ===== */
+.login-brand {
+  flex: 1;
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #409EFF, #36cfc9);
-  border-radius: 12px;
-  color: #fff;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.4);
+  padding: 60px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    top: -100px;
+    right: -100px;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    bottom: -80px;
+    left: -80px;
+  }
 }
 
-.login-title {
+.brand-content {
+  position: relative;
+  z-index: 1;
+  max-width: 400px;
+}
+
+.brand-title {
+  font-size: 48px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 12px;
+  letter-spacing: -0.02em;
+}
+
+.brand-subtitle {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 48px;
+}
+
+.brand-features {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+}
+
+.feature-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  flex-shrink: 0;
+}
+
+/* ===== 右侧登录表单 ===== */
+.login-form-wrapper {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+.login-form-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.form-header {
+  margin-bottom: 40px;
+}
+
+.form-title {
   font-size: 28px;
-  font-weight: 600;
-  color: #fff;
+  font-weight: 700;
+  color: var(--text-primary);
   margin: 0 0 8px;
-  letter-spacing: 1px;
 }
 
-.login-subtitle {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.7);
+.form-subtitle {
+  font-size: 15px;
+  color: var(--text-secondary);
   margin: 0;
 }
 
-/* 表单 */
-:deep(.el-input__wrapper) {
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 8px;
-  box-shadow: none;
-  transition: all 0.3s ease;
-}
+.login-form {
+  .form-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
 
-:deep(.el-input__wrapper:hover) {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: rgba(255, 255, 255, 0.3);
-}
+  :deep(.el-form-item) {
+    margin-bottom: 24px;
+  }
 
-:deep(.el-input__wrapper.is-focus) {
-  background: rgba(255, 255, 255, 0.2);
-  border-color: #409EFF;
-  box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.3);
-}
+  :deep(.el-input__wrapper) {
+    background-color: var(--bg-surface);
+    border: 1px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    padding: 0 14px;
+    height: 44px;
+    box-shadow: none !important;
+    transition: all var(--transition-fast);
+  }
 
-:deep(.el-input__inner) {
-  color: #fff;
-}
+  :deep(.el-input__wrapper:hover) {
+    border-color: var(--color-gray-300);
+  }
 
-:deep(.el-input__inner::placeholder) {
-  color: rgba(255, 255, 255, 0.5);
-}
+  :deep(.el-input__wrapper.is-focus) {
+    border-color: var(--color-primary-500);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  }
 
-:deep(.el-input__prefix-inner) {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-:deep(.el-checkbox__label) {
-  color: rgba(255, 255, 255, 0.8);
-}
-
-:deep(.el-checkbox__inner) {
-  background: rgba(255, 255, 255, 0.15);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-
-:deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
-  background: #409EFF;
-  border-color: #409EFF;
+  :deep(.el-input__inner) {
+    height: 44px;
+    line-height: 44px;
+    font-size: 14px;
+  }
 }
 
 .login-btn {
   width: 100%;
-  height: 48px;
-  font-size: 16px;
+  height: 44px;
+  font-size: 15px;
   font-weight: 500;
-  letter-spacing: 2px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #409EFF, #36cfc9);
-  border: none;
-  box-shadow: 0 4px 12px rgba(64, 158, 255, 0.4);
-  transition: all 0.3s ease;
+  letter-spacing: 1px;
+  border-radius: var(--radius-md);
+  margin-top: 8px;
 }
 
-.login-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(64, 158, 255, 0.5);
-}
-
-.login-btn:active {
-  transform: translateY(0);
-}
-
-/* 底部 */
-.login-footer {
-  margin-top: 32px;
+.form-footer {
+  margin-top: 40px;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: 20px;
+  padding-top: 24px;
+  border-top: 1px solid var(--color-gray-200);
 }
 
-.login-footer p {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
+.form-footer p {
+  font-size: 13px;
+  color: var(--text-tertiary);
   margin: 0;
 }
 
-/* 响应式 */
-@media (max-width: 768px) {
-  .login-card {
-    width: 90%;
-    padding: 36px 24px;
-  }
-
-  .login-title {
-    font-size: 24px;
-  }
-
-  .bg-shape {
+/* ===== 响应式 ===== */
+@media (max-width: 1024px) {
+  .login-brand {
     display: none;
+  }
+
+  .login-form-wrapper {
+    flex: 1;
+  }
+
+  .login-form-card {
+    max-width: 400px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-form-wrapper {
+    padding: 24px;
+  }
+
+  .form-title {
+    font-size: 24px;
   }
 }
 </style>

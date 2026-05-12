@@ -1,0 +1,236 @@
+/* ===== Sidebar ===== */
+.sidebar {
+  background-color: var(--bg-sidebar);
+  border-right: 1px solid var(--color-gray-200);
+  transition: width var(--transition-slow);
+}
+
+.logo {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--bg-surface);
+}
+
+.sidebar :deep(.el-menu) {
+  border-right: none;
+}
+
+.sidebar :deep(.el-menu-item) {
+  color: var(--text-sidebar);
+  border-radius: var(--radius-sm);
+  margin: 1px 4px;
+  height: 40px;
+  line-height: 40px;
+  transition: all var(--transition-fast);
+}
+
+.sidebar :deep(.el-menu-item:hover) {
+  background-color: var(--bg-sidebar-hover);
+  color: var(--text-sidebar-active);
+}
+
+.sidebar :deep(.el-menu-item.is-active) {
+  background-color: var(--bg-sidebar-active);
+  color: var(--text-sidebar-active);
+  font-weight: 500;
+}
+
+.sidebar :deep(.el-menu-item.is-active::before) {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background-color: var(--color-primary-500);
+  border-radius: 0 2px 2px 0;
+}
+
+.sidebar :deep(.el-sub-menu__title) {
+  color: var(--text-sidebar);
+  border-radius: var(--radius-sm);
+  margin: 1px 4px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.sidebar :deep(.el-sub-menu__title:hover) {
+  background-color: var(--bg-sidebar-hover);
+  color: var(--text-sidebar-active);
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--color-gray-200);
+  padding: 0 var(--space-6);
+  height: 56px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.breadcrumb-separator {
+  color: var(--text-tertiary);
+  margin: 0 2px;
+}
+
+.breadcrumb-item {
+  color: var(--text-secondary);
+}
+
+.breadcrumb-item:last-child {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ===== Card Header Content ===== */
+.el-card__header .card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.collapse-btn {
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text-primary);
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--color-gray-200);
+  background: var(--bg-surface);
+}
+
+.collapse-btn:hover {
+  background-color: var(--color-gray-50);
+  border-color: var(--color-primary-300);
+  color: var(--color-primary-500);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  font-size: var(--text-sm);
+}
+
+.user-info:hover {
+  color: var(--text-primary);
+  background-color: var(--color-gray-100);
+}
+
+/* ===== Tab Bar ===== */
+.tabs-bar {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-4);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--color-gray-200);
+  gap: var(--space-2);
+  overflow-x: auto;
+  min-height: 40px;
+}
+
+.tabs-bar::-webkit-scrollbar {
+  height: 0;
+}
+
+.tab-item {
+  cursor: pointer;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--border-color) !important;
+  padding: 0 var(--space-3) !important;
+  height: 28px !important;
+  line-height: 26px !important;
+  font-size: var(--text-xs) !important;
+  transition: all var(--transition-fast) !important;
+  background: var(--bg-surface) !important;
+  color: var(--text-secondary) !important;
+}
+
+.tab-item:hover {
+  border-color: var(--color-primary-300) !important;
+  color: var(--color-primary-500) !important;
+}
+
+/* Active tab: solid primary bg + white text, like a selected navigation pill */
+/* Element Plus uses effect="dark" for active, which maps to .el-tag--dark */
+.tab-item.el-tag--dark {
+  background: var(--color-primary-500) !important;
+  border-color: var(--color-primary-500) !important;
+  color: #ffffff !important;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+}
+
+/* ===== Content Area ===== */
+.main {
+  background: var(--bg-page);
+  padding: 0;
+}
+
+/* ===== Search Card ===== */
+.search-card {
+  margin-bottom: 16px;
+}
+
+.search-card :deep(.el-card__body) {
+  padding: var(--space-4) var(--space-6);
+}
+
+/* ===== Table Card ===== */
+.table-card {
+  border-color: var(--color-gray-200);
+}
+
+/* ===== Pagination ===== */
+.pagination-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+/* ===== Search Form ===== */
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 12px;
+}
+
+.search-form :deep(.el-form-item:last-child) {
+  margin-left: auto;
+}
