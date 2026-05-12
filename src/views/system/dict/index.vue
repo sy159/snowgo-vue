@@ -309,9 +309,9 @@ onMounted(() => {
   <div class="dict-management">
     <!-- 视图一：字典列表 -->
     <template v-if="!selectedDict">
-      <el-card shadow="never" class="table-card">
-        <!-- 搜索表单 -->
-        <el-form :model="searchForm" inline @submit.prevent="handleSearch">
+      <!-- 搜索表单 -->
+      <el-card shadow="never" class="search-card">
+        <el-form :model="searchForm" inline class="search-form" @submit.prevent="handleSearch">
           <el-form-item label="字典名称">
             <el-input
               v-model="searchForm.name"
@@ -339,8 +339,10 @@ onMounted(() => {
             </el-button>
           </el-form-item>
         </el-form>
+      </el-card>
 
-        <!-- 工具栏 -->
+      <!-- 工具栏 & 表格 -->
+      <el-card shadow="never" class="table-card">
         <div class="card-header">
           <span>字典列表</span>
           <el-button v-permission="'system:dict:create'" type="primary" @click="openAddDict">
