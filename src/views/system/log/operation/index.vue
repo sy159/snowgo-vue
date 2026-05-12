@@ -2,10 +2,24 @@
 import type { OperationLogCondition, OperationLogInfo } from '@/api/system/log'
 import { Refresh, Search } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref } from 'vue'
+import { getItemListByDictCode, type ItemInfo } from '@/api/system/dict'
 import {
   getOperationLogList,
 
 } from '@/api/system/log'
+
+// 资源字典项
+const resourceOptions = ref<ItemInfo[]>([])
+
+async function loadResourceOptions() {
+  try {
+    const res = await getItemListByDictCode('operation_resource')
+    resourceOptions.value = res.data
+  }
+  catch {
+    // 错误已由拦截器处理
+  }
+}
 
 // 搜索条件
 const searchForm = reactive({
@@ -97,6 +111,7 @@ function formatJson(data: string): string {
 
 onMounted(() => {
   fetchList()
+  loadResourceOptions()
 })
 </script>
 
@@ -115,13 +130,19 @@ onMounted(() => {
           />
         </el-form-item>
         <el-form-item label="资源">
-          <el-input
+          <el-select
             v-model="searchForm.resource"
-            placeholder="请输入资源"
+            placeholder="请选择资源"
             clearable
             style="width: 160px"
-            @keyup.enter="fetchList"
-          />
+          >
+            <el-option
+              v-for="item in resourceOptions"
+              :key="item.item_code"
+              :label="item.item_name"
+              :value="item.item_code"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item label="操作类型">
           <el-select
