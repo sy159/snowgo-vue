@@ -106,7 +106,7 @@ npm run preview
 
 ## 相关项目
 
-- 后端 API 服务：[snowgo](https://github.com/sy159/snowgo) — 基于 Spring Boot 的企业管理后台后端
+- 后端 API 服务：[snowgo](https://github.com/sy159/snowgo) — 基于 Gin + GORM Gen 的 Go Web 脚手架，提供 RESTful API 服务
 
 ## 后端接口
 
