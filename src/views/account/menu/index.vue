@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { FormInstance, FormRules } from 'element-plus'
 import type { MenuInfo, MenuParam } from '@/api/account/menu'
-import { Plus } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
@@ -121,10 +120,17 @@ function buildFormRules(): FormRules {
 
 const formRules = ref<FormRules>(buildFormRules())
 
-function handleAdd() {
+function handleAdd(parentRow?: MenuInfo) {
   isEdit.value = false
-  form.parent_id = 0
-  form.menu_type = 'Dir'
+  if (parentRow) {
+    form.parent_id = parentRow.id
+    // 根据父级类型自动设置当前类型
+    form.menu_type = parentRow.menu_type === 'Dir' ? 'Dir' : 'Btn'
+  }
+  else {
+    form.parent_id = 0
+    form.menu_type = 'Dir'
+  }
   formRules.value = buildFormRules()
   dialogVisible.value = true
 }
@@ -233,9 +239,6 @@ onMounted(() => {
       <template #header>
         <div class="card-header">
           <span>菜单列表</span>
-          <el-button v-permission="'account:menu:create'" type="primary" @click="handleAdd">
-            <el-icon><Plus /></el-icon>新增
-          </el-button>
         </div>
       </template>
 
@@ -268,8 +271,11 @@ onMounted(() => {
         </el-table-column>
         <el-table-column prop="perms" label="权限标识" min-width="180" show-overflow-tooltip />
         <el-table-column prop="sort_order" label="排序" width="80" align="center" />
-        <el-table-column v-if="userStore.hasPermission(['account:menu:update', 'account:menu:delete'])" label="操作" width="180" fixed="right">
+        <el-table-column v-if="userStore.hasPermission(['account:menu:create', 'account:menu:update', 'account:menu:delete'])" label="操作" width="280" fixed="right">
           <template #default="{ row }">
+            <el-button v-if="row.menu_type !== 'Btn'" v-permission="'account:menu:create'" link type="success" size="small" @click="handleAdd(row)">
+              新增子菜单
+            </el-button>
             <el-button v-permission="'account:menu:update'" link type="primary" size="small" @click="handleEdit(row)">
               编辑
             </el-button>
