@@ -527,7 +527,7 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .dict-management {
-  padding: 20px;
+  padding: var(--space-6);
 }
 
 .card-header {
@@ -535,16 +535,6 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   padding: 16px 0;
-}
-
-.search-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0 12px;
-}
-
-.search-form :deep(.el-form-item:last-child) {
-  margin-left: auto;
 }
 
 .header-left {
@@ -556,17 +546,11 @@ onMounted(() => {
 .dict-title {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .dict-code-tag {
   margin-left: 8px;
-}
-
-.pagination-wrapper {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 16px;
 }
 
 .dict-code-link {

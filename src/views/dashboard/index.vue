@@ -43,18 +43,18 @@ function updateTime() {
 
 // 统计数据（占位数据）
 const statsData = [
-  { label: '用户总数', value: 1268, color: '#409EFF', icon: User },
-  { label: '系统日志', value: 5632, color: '#67C23A', icon: Document },
-  { label: '在线用户', value: 42, color: '#E6A23C', icon: Connection },
-  { label: '系统运行', value: 365, color: '#909399', icon: Clock },
+  { label: '用户总数', value: 1268, color: 'var(--color-primary-500)', icon: User },
+  { label: '系统日志', value: 5632, color: 'var(--color-success-500)', icon: Document },
+  { label: '在线用户', value: 42, color: 'var(--color-warning-500)', icon: Connection },
+  { label: '系统运行', value: 365, color: 'var(--color-info-500)', icon: Clock },
 ]
 
 // 快捷入口
 const quickLinks = [
-  { label: '用户管理', path: '/account/user', color: '#409EFF', icon: User },
-  { label: '操作日志', path: '/system/log/operation', color: '#67C23A', icon: Document },
-  { label: '字典管理', path: '/system/dict', color: '#E6A23C', icon: List },
-  { label: '角色管理', path: '/account/role', color: '#909399', icon: Setting },
+  { label: '用户管理', path: '/account/user', color: 'var(--color-primary-500)', icon: User },
+  { label: '操作日志', path: '/system/log/operation', color: 'var(--color-success-500)', icon: Document },
+  { label: '字典管理', path: '/system/dict', color: 'var(--color-warning-500)', icon: List },
+  { label: '角色管理', path: '/account/role', color: 'var(--color-info-500)', icon: Setting },
 ]
 
 function handleNavigate(path: string) {
@@ -76,7 +76,7 @@ function handleNavigate(path: string) {
           </p>
         </div>
         <div class="welcome-icon">
-          <el-icon :size="64" color="#409EFF">
+          <el-icon :size="64" color="var(--color-primary-500)">
             <Monitor />
           </el-icon>
         </div>
@@ -147,7 +147,7 @@ function handleNavigate(path: string) {
 
 <style scoped lang="scss">
 .dashboard-container {
-  padding: 20px;
+  padding: var(--space-6);
 }
 
 .welcome-card {
@@ -168,13 +168,13 @@ function handleNavigate(path: string) {
   margin: 0 0 8px;
   font-size: 24px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .welcome-subtitle {
   margin: 0;
   font-size: 14px;
-  color: #909399;
+  color: var(--text-tertiary);
 }
 
 .welcome-icon {
@@ -205,7 +205,7 @@ function handleNavigate(path: string) {
   justify-content: center;
   width: 56px;
   height: 56px;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
 }
 
 .stat-info {
@@ -213,14 +213,14 @@ function handleNavigate(path: string) {
 
   :deep(.el-statistic__head) {
     font-size: 13px;
-    color: #909399;
+    color: var(--text-tertiary);
     margin-bottom: 4px;
   }
 
   :deep(.el-statistic__content) {
     font-size: 24px;
     font-weight: 600;
-    color: #303133;
+    color: var(--text-primary);
   }
 }
 
@@ -231,7 +231,7 @@ function handleNavigate(path: string) {
 .card-header {
   font-size: 16px;
   font-weight: 600;
-  color: #303133;
+  color: var(--text-primary);
 }
 
 .quick-link {
@@ -240,14 +240,14 @@ function handleNavigate(path: string) {
   align-items: center;
   justify-content: center;
   padding: 20px 12px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.3s;
-  background-color: #f5f7fa;
+  background-color: var(--color-gray-100);
   margin-bottom: 12px;
 
   &:hover {
-    background-color: #ecf5ff;
+    background-color: var(--color-primary-50);
     transform: translateY(-2px);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   }
@@ -256,6 +256,6 @@ function handleNavigate(path: string) {
 .quick-link-label {
   margin-top: 8px;
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
 }
 </style>

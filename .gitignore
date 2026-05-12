@@ -15,6 +15,7 @@ dist-ssr
 # Editor directories and files
 .vscode
 .claude
+docs/superpowers/
 .idea
 .DS_Store
 *.suo
