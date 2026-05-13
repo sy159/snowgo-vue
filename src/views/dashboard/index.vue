@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Cpu, List, Monitor, Refresh, Setting, Timer } from '@element-plus/icons-vue'
+import { Cpu, List, Monitor, Refresh, Setting } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store'
@@ -55,7 +55,7 @@ function handleNavigate(path: string) {
 
 const quickLinks = [
   { label: '用户管理', path: '/account/user', icon: Monitor },
-  { label: '操作日志', path: '/system/log/operation', icon: Timer },
+  { label: '操作日志', path: '/system/log/operation', icon: Setting },
   { label: '字典管理', path: '/system/dict', icon: List },
   { label: '角色管理', path: '/account/role', icon: Setting },
 ]
@@ -74,106 +74,50 @@ onUnmounted(() => {
 <template>
   <div class="dashboard-container">
     <!-- 欢迎 + 快捷统计 -->
-    <el-row :gutter="20">
-      <el-col :xs="24" :lg="16">
-        <el-card shadow="hover" class="welcome-card">
-          <div class="welcome-content">
-            <div class="welcome-text">
-              <h1 class="welcome-title">
-                欢迎回来，{{ userStore.userInfo?.nickname || userStore.userInfo?.username || '管理员' }}
-              </h1>
-              <p class="welcome-subtitle">
-                {{ currentDate }}，祝您工作愉快
-              </p>
-            </div>
-            <el-button :icon="Refresh" circle @click="fetchSystemInfo" :loading="loading" />
-          </div>
-        </el-card>
-      </el-col>
-      <el-col :xs="24" :lg="8">
-        <el-card shadow="hover" class="quick-stats-card">
-          <div class="quick-stats">
-            <div v-if="systemInfo" class="stat-item">
-              <el-tag :type="envTagType" size="small" effect="dark">
-                {{ systemInfo.service_info.env.toUpperCase() }}
-              </el-tag>
-              <span class="stat-label">运行环境</span>
-            </div>
-            <div v-if="systemInfo" class="stat-item">
-              <span class="stat-value">{{ systemInfo.service_info.uptime }}</span>
-              <span class="stat-label">运行时长</span>
-            </div>
-            <div v-if="systemInfo" class="stat-item">
-              <span class="stat-value">{{ systemInfo.go_runtime.goroutines }}</span>
-              <span class="stat-label">Goroutines</span>
-            </div>
-            <div v-if="systemInfo" class="stat-item">
-              <span class="stat-value">{{ systemInfo.go_runtime.mem_alloc_mb }} MB</span>
-              <span class="stat-label">内存占用</span>
-            </div>
-          </div>
-        </el-card>
-      </el-col>
-    </el-row>
-
-    <!-- Go Runtime -->
-    <el-card v-if="systemInfo" shadow="hover" class="section-card">
+    <el-card shadow="hover" class="welcome-card card-accent-blue">
       <template #header>
-        <div class="card-header">
-          <el-icon :size="18"><Cpu /></el-icon>
-          <span>Go Runtime</span>
+        <div class="card-header-row">
+          <div class="header-left">
+            <h1 class="welcome-title">
+              欢迎回来，{{ userStore.userInfo?.nickname || userStore.userInfo?.username || '管理员' }}
+            </h1>
+            <p class="welcome-subtitle">
+              {{ currentDate }}，祝您工作愉快
+            </p>
+          </div>
+          <el-button :icon="Refresh" circle @click="fetchSystemInfo" :loading="loading" />
         </div>
       </template>
-      <el-row :gutter="16">
-        <el-col :xs="12" :sm="8" :md="4">
-          <div class="runtime-item">
-            <span class="runtime-label">Go 版本</span>
-            <span class="runtime-value">{{ systemInfo.go_runtime.go_version }}</span>
-          </div>
-        </el-col>
-        <el-col :xs="12" :sm="8" :md="4">
-          <div class="runtime-item">
-            <span class="runtime-label">CPU 核心</span>
-            <span class="runtime-value">{{ systemInfo.go_runtime.num_cpu }}</span>
-          </div>
-        </el-col>
-        <el-col :xs="12" :sm="8" :md="4">
-          <div class="runtime-item">
-            <span class="runtime-label">Goroutines</span>
-            <span class="runtime-value">{{ systemInfo.go_runtime.goroutines }}</span>
-          </div>
-        </el-col>
-        <el-col :xs="12" :sm="8" :md="4">
-          <div class="runtime-item">
-            <span class="runtime-label">GC 次数</span>
-            <span class="runtime-value">{{ systemInfo.go_runtime.gc_count }}</span>
-          </div>
-        </el-col>
-        <el-col :xs="12" :sm="8" :md="4">
-          <div class="runtime-item">
-            <span class="runtime-label">已分配</span>
-            <span class="runtime-value">{{ systemInfo.go_runtime.mem_alloc_mb }} MB</span>
-          </div>
-        </el-col>
-        <el-col :xs="12" :sm="8" :md="4">
-          <div class="runtime-item">
-            <span class="runtime-label">总分配</span>
-            <span class="runtime-value">{{ systemInfo.go_runtime.mem_total_mb }} MB</span>
-          </div>
-        </el-col>
-        <el-col :xs="12" :sm="8" :md="4">
-          <div class="runtime-item">
-            <span class="runtime-label">系统内存</span>
-            <span class="runtime-value">{{ systemInfo.go_runtime.mem_sys_mb }} MB</span>
-          </div>
-        </el-col>
-      </el-row>
+      <div v-if="systemInfo" class="quick-stats-row">
+        <div class="stat-divider" />
+        <div class="stat-item">
+          <span class="stat-label">运行环境</span>
+          <el-tag :type="envTagType" size="small" effect="dark">
+            {{ systemInfo.service_info.env.toUpperCase() }}
+          </el-tag>
+        </div>
+        <div class="stat-divider" />
+        <div class="stat-item">
+          <span class="stat-label">运行时长</span>
+          <span class="stat-value">{{ systemInfo.service_info.uptime }}</span>
+        </div>
+        <div class="stat-divider" />
+        <div class="stat-item">
+          <span class="stat-label">Goroutines</span>
+          <span class="stat-value">{{ systemInfo.go_runtime.goroutines }}</span>
+        </div>
+        <div class="stat-divider" />
+        <div class="stat-item">
+          <span class="stat-label">内存占用</span>
+          <span class="stat-value">{{ systemInfo.go_runtime.mem_alloc_mb }} MB</span>
+        </div>
+      </div>
     </el-card>
 
     <!-- 服务器信息 + 磁盘 -->
-    <el-row v-if="systemInfo" :gutter="20">
+    <el-row :gutter="20">
       <el-col :xs="24" :md="12">
-        <el-card shadow="hover" class="section-card">
+        <el-card shadow="hover" class="section-card card-accent-orange">
           <template #header>
             <div class="card-header">
               <el-icon :size="18"><Setting /></el-icon>
@@ -182,25 +126,25 @@ onUnmounted(() => {
           </template>
           <el-descriptions :column="1" border>
             <el-descriptions-item label="服务名称">
-              {{ systemInfo.service_info.name }}
+              {{ systemInfo?.service_info.name || '-' }}
             </el-descriptions-item>
             <el-descriptions-item label="服务版本">
-              {{ systemInfo.service_info.version }}
+              {{ systemInfo?.service_info.version || '-' }}
             </el-descriptions-item>
             <el-descriptions-item label="操作系统">
-              {{ systemInfo.os_info.os }} / {{ systemInfo.os_info.arch }}
+              {{ systemInfo?.os_info.os || '-' }} / {{ systemInfo?.os_info.arch || '-' }}
             </el-descriptions-item>
             <el-descriptions-item label="主机名">
-              {{ systemInfo.os_info.hostname }}
+              {{ systemInfo?.os_info.hostname || '-' }}
             </el-descriptions-item>
             <el-descriptions-item label="启动时间">
-              {{ systemInfo.service_info.start_time }}
+              {{ systemInfo?.service_info.start_time || '-' }}
             </el-descriptions-item>
           </el-descriptions>
         </el-card>
       </el-col>
       <el-col :xs="24" :md="12">
-        <el-card shadow="hover" class="section-card">
+        <el-card shadow="hover" class="section-card card-accent-green">
           <template #header>
             <div class="card-header">
               <el-icon :size="18"><Monitor /></el-icon>
@@ -219,21 +163,63 @@ onUnmounted(() => {
             <div class="disk-details">
               <div class="disk-row">
                 <span class="disk-label">已使用</span>
-                <span class="disk-value">{{ systemInfo.os_info.disk_used_gb }} GB</span>
+                <span class="disk-value">{{ systemInfo?.os_info.disk_used_gb || 0 }} GB</span>
               </div>
               <div class="disk-row">
                 <span class="disk-label">总容量</span>
-                <span class="disk-value">{{ systemInfo.os_info.disk_total_gb }} GB</span>
+                <span class="disk-value">{{ systemInfo?.os_info.disk_total_gb || 0 }} GB</span>
               </div>
               <div class="disk-row">
                 <span class="disk-label">可用</span>
-                <span class="disk-value">{{ systemInfo.os_info.disk_free_gb }} GB</span>
+                <span class="disk-value">{{ systemInfo?.os_info.disk_free_gb || 0 }} GB</span>
               </div>
             </div>
           </div>
         </el-card>
       </el-col>
     </el-row>
+
+    <!-- Go Runtime -->
+    <el-card v-if="systemInfo" shadow="hover" class="section-card card-accent-purple">
+      <template #header>
+        <div class="card-header">
+          <el-icon :size="18"><Cpu /></el-icon>
+          <span>Go Runtime</span>
+        </div>
+      </template>
+      <div class="runtime-row">
+        <div class="runtime-divider" />
+        <div class="runtime-item">
+          <span class="runtime-label">Go 版本</span>
+          <span class="runtime-value">{{ systemInfo.go_runtime.go_version }}</span>
+        </div>
+        <div class="runtime-divider" />
+        <div class="runtime-item">
+          <span class="runtime-label">CPU 核心</span>
+          <span class="runtime-value">{{ systemInfo.go_runtime.num_cpu }}</span>
+        </div>
+        <div class="runtime-divider" />
+        <div class="runtime-item">
+          <span class="runtime-label">Goroutines</span>
+          <span class="runtime-value">{{ systemInfo.go_runtime.goroutines }}</span>
+        </div>
+        <div class="runtime-divider" />
+        <div class="runtime-item">
+          <span class="runtime-label">GC 次数</span>
+          <span class="runtime-value">{{ systemInfo.go_runtime.gc_count }}</span>
+        </div>
+        <div class="runtime-divider" />
+        <div class="runtime-item">
+          <span class="runtime-label">已分配</span>
+          <span class="runtime-value">{{ systemInfo.go_runtime.mem_alloc_mb }} MB</span>
+        </div>
+        <div class="runtime-divider" />
+        <div class="runtime-item">
+          <span class="runtime-label">总分配</span>
+          <span class="runtime-value">{{ systemInfo.go_runtime.mem_total_mb }} MB</span>
+        </div>
+      </div>
+    </el-card>
 
     <!-- 快捷入口 -->
     <el-card shadow="hover" class="section-card">
@@ -260,25 +246,27 @@ onUnmounted(() => {
 <style scoped lang="scss">
 .dashboard-container {
   padding: var(--space-6);
+  background: var(--bg-page);
+  min-height: 100%;
 }
 
-/* ===== Welcome ===== */
+/* ===== Welcome Card ===== */
 .welcome-card {
   margin-bottom: var(--space-5);
 
   :deep(.el-card__body) {
-    padding: var(--space-6);
+    padding-top: var(--space-2);
   }
 }
 
-.welcome-content {
+.card-header-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
 .welcome-title {
-  margin: 0 0 var(--space-2);
+  margin: 0 0 var(--space-1);
   font-size: var(--text-xl);
   font-weight: 600;
   color: var(--text-primary);
@@ -290,36 +278,37 @@ onUnmounted(() => {
   color: var(--text-tertiary);
 }
 
-/* ===== Quick Stats ===== */
-.quick-stats-card {
-  margin-bottom: var(--space-5);
-
-  :deep(.el-card__body) {
-    padding: var(--space-4) var(--space-6);
-  }
-}
-
-.quick-stats {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-4);
+/* ===== Quick Stats Row ===== */
+.quick-stats-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) 0;
 }
 
 .stat-item {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+}
+
+.stat-divider {
+  width: 1px;
+  height: 32px;
+  background-color: var(--color-gray-200);
+}
+
+.stat-label {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
 }
 
 .stat-value {
   font-size: var(--text-lg);
   font-weight: 600;
   color: var(--text-primary);
-}
-
-.stat-label {
-  font-size: var(--text-xs);
-  color: var(--text-tertiary);
 }
 
 /* ===== Section Cards ===== */
@@ -331,29 +320,6 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-base);
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-/* ===== Go Runtime ===== */
-.runtime-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: var(--space-4) var(--space-2);
-  background: var(--color-gray-25);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--space-3);
-}
-
-.runtime-label {
-  font-size: var(--text-xs);
-  color: var(--text-tertiary);
-  margin-bottom: var(--space-1);
-}
-
-.runtime-value {
   font-size: var(--text-base);
   font-weight: 600;
   color: var(--text-primary);
@@ -393,6 +359,38 @@ onUnmounted(() => {
 .disk-value {
   font-size: var(--text-sm);
   font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ===== Go Runtime Row ===== */
+.runtime-row {
+  display: flex;
+  align-items: center;
+  padding: var(--space-1) 0;
+}
+
+.runtime-divider {
+  width: 1px;
+  height: 36px;
+  background-color: var(--color-gray-200);
+}
+
+.runtime-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.runtime-label {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+.runtime-value {
+  font-size: var(--text-lg);
+  font-weight: 600;
   color: var(--text-primary);
 }
 

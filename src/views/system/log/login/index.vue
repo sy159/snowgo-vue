@@ -160,6 +160,8 @@ onMounted(() => {
 <style scoped lang="scss">
 .login-log-page {
   padding: var(--space-6);
+  background: var(--bg-page);
+  min-height: 100%;
 }
 
 .msg-success {

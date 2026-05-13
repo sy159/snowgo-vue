@@ -100,53 +100,18 @@ function getLeafIds(nodes: MenuInfo[]): number[] {
   return ids
 }
 
-/** 判断节点是否包含目标叶子节点中的任何一个 */
-function containsAnyLeaf(node: MenuInfo, leafSet: Set<number>): boolean {
-  if (!node.children?.length) return leafSet.has(node.id)
-  return node.children.some(c => containsAnyLeaf(c, leafSet))
-}
-
-/** 过滤出叶子节点（去掉只包含非叶子节点的父级，保留叶子父级） */
-function filterToLeafOnly(nodes: MenuInfo[], leafSet: Set<number>): MenuInfo[] {
-  const result: MenuInfo[] = []
-  for (const n of nodes) {
-    if (!n.children?.length) {
-      if (leafSet.has(n.id)) result.push({ ...n })
-    }
-    else {
-      const filteredChildren = filterToLeafOnly(n.children, leafSet)
-      if (filteredChildren.length) result.push({ ...n, children: filteredChildren })
-    }
-  }
-  return result
-}
-
-/** 过滤出当前用户有权限的菜单节点 */
-function filterByPermission(nodes: MenuInfo[]): MenuInfo[] {
-  const result: MenuInfo[] = []
-  for (const n of nodes) {
-    let filteredChildren: MenuInfo[] = []
-    if (n.children?.length) {
-      filteredChildren = filterByPermission(n.children)
-    }
-    const hasPerm = n.perms ? userStore.permissions.includes(n.perms) : filteredChildren.length > 0
-    if (hasPerm) {
-      result.push({ ...n, children: filteredChildren })
-    }
-  }
-  return result
-}
-
-async function loadMenuTree() {
+async function loadMenuTree(showAll: boolean) {
   menuLoading.value = true
   try {
-    // 确保用户权限已加载
-    if (!userStore.permissions.length) {
-      await userStore.fetchUserInfo()
+    if (showAll) {
+      // 编辑角色：通过 menu 接口获取所有菜单
+      const res = await getMenuList()
+      menuTree.value = res.data
     }
-    const res = await getMenuList()
-    // 过滤出当前用户有权限的菜单
-    menuTree.value = filterByPermission(res.data)
+    else {
+      // 新增角色：只显示当前用户已有的菜单（来自权限接口的 menu_list）
+      menuTree.value = userStore.menuList
+    }
   }
   catch {
     // 错误已由拦截器处理
@@ -166,7 +131,7 @@ async function handleAdd() {
     menu_ids: [],
   })
   checkedMenuIds.value = []
-  await loadMenuTree()
+  await loadMenuTree(false)
   dialogVisible.value = true
 }
 
@@ -181,16 +146,15 @@ async function handleEdit(row: RoleInfo) {
   })
   checkedMenuIds.value = []
 
-  // 先获取角色权限
+  // 加载菜单树（编辑模式：显示所有菜单）
+  await loadMenuTree(true)
+
+  // 获取角色已分配的权限
   try {
     const res = await getRoleById(row.id)
     if (res.data.menu_ids?.length) {
-      // 加载菜单树
-      await loadMenuTree()
-      // 从菜单树中找出所有叶子节点 ID
       const allLeafIds = getLeafIds(menuTree.value)
       const leafSet = new Set(allLeafIds)
-      // 只保留叶子节点 ID 作为默认勾选（避免父级 ID 导致级联全选）
       checkedMenuIds.value = res.data.menu_ids.filter(id => leafSet.has(id))
     }
   }
@@ -394,5 +358,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .role-management {
   padding: var(--space-6);
+  background: var(--bg-page);
+  min-height: 100%;
 }
 </style>

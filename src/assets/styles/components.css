@@ -11,6 +11,13 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
+/* Card left accent color variants */
+.el-card.card-accent-blue { border-left: 4px solid var(--color-primary-500); }
+.el-card.card-accent-green { border-left: 4px solid var(--color-success-500); }
+.el-card.card-accent-purple { border-left: 4px solid #8b5cf6; }
+.el-card.card-accent-orange { border-left: 4px solid var(--color-warning-500); }
+.el-card.card-accent-red { border-left: 4px solid var(--color-danger-500); }
+
 .el-card__header {
   padding: var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--color-gray-100);
@@ -28,7 +35,6 @@
 /* ===== Tables ===== */
 .el-table {
   border-radius: var(--radius-md);
-  overflow: hidden;
 }
 
 .el-table th.el-table__cell {

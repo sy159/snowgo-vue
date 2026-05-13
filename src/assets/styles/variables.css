@@ -47,10 +47,10 @@
   --color-gray-900: #111827;
 
   /* Semantic backgrounds */
-  --bg-page: #f5f7fa;
+  --bg-page: #f0f4f8;
   --bg-surface: #ffffff;
   --bg-surface-hover: var(--color-gray-50);
-  --bg-sidebar: #f3f4f6;
+  --bg-sidebar: #eef1f6;
   --bg-sidebar-hover: var(--color-gray-100);
   --bg-sidebar-active: var(--color-primary-100);
 
@@ -59,7 +59,7 @@
   --text-secondary: var(--color-gray-500);
   --text-tertiary: var(--color-gray-400);
   --text-disabled: var(--color-gray-300);
-  --text-sidebar: var(--color-gray-600);
+  --text-sidebar: var(--color-gray-700);
   --text-sidebar-active: var(--color-primary-600);
 
   /* ===== Spacing Scale (4px-based) ===== */

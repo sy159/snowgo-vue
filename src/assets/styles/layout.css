@@ -1,7 +1,7 @@
 /* ===== Sidebar ===== */
 .sidebar {
   background-color: var(--bg-sidebar);
-  border-right: 1px solid var(--color-gray-200);
+  border-right: 1px solid var(--color-gray-300);
   transition: width var(--transition-slow);
 }
 
@@ -75,27 +75,38 @@
   background: var(--bg-surface);
   border-bottom: 1px solid var(--color-gray-200);
   padding: 0 var(--space-6);
-  height: 56px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+  height: 64px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-gray-200);
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
-  font-size: var(--text-sm);
+  gap: var(--space-2);
+  font-size: var(--text-base);
   color: var(--text-secondary);
 }
 
 .breadcrumb-separator {
   color: var(--text-tertiary);
-  margin: 0 2px;
+  font-size: var(--text-sm);
 }
 
 .breadcrumb-item {
@@ -104,7 +115,7 @@
 
 .breadcrumb-item:last-child {
   color: var(--text-primary);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* ===== Card Header Content ===== */
@@ -115,23 +126,21 @@
 }
 
 .collapse-btn {
-  font-size: 22px;
+  font-size: 20px;
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   padding: var(--space-2);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   transition: all var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid var(--color-gray-200);
-  background: var(--bg-surface);
+  width: 32px;
+  height: 32px;
 }
 
 .collapse-btn:hover {
-  background-color: var(--color-gray-50);
+  background-color: var(--color-primary-50);
   border-color: var(--color-primary-300);
   color: var(--color-primary-500);
 }
@@ -139,62 +148,15 @@
 .user-info {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   cursor: pointer;
-  color: var(--text-secondary);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
   transition: all var(--transition-fast);
-  font-size: var(--text-sm);
 }
 
 .user-info:hover {
-  color: var(--text-primary);
-  background-color: var(--color-gray-100);
-}
-
-/* ===== Tab Bar ===== */
-.tabs-bar {
-  display: flex;
-  align-items: center;
-  padding: var(--space-2) var(--space-4);
-  background: var(--bg-surface);
-  border-bottom: 1px solid var(--color-gray-200);
-  gap: var(--space-2);
-  overflow-x: auto;
-  min-height: 40px;
-}
-
-.tabs-bar::-webkit-scrollbar {
-  height: 0;
-}
-
-.tab-item {
-  cursor: pointer;
-  border-radius: var(--radius-md) !important;
-  border: 1px solid var(--border-color) !important;
-  padding: 0 var(--space-3) !important;
-  height: 28px !important;
-  line-height: 26px !important;
-  font-size: var(--text-xs) !important;
-  transition: all var(--transition-fast) !important;
-  background: var(--bg-surface) !important;
-  color: var(--text-secondary) !important;
-}
-
-.tab-item:hover {
-  border-color: var(--color-primary-300) !important;
-  color: var(--color-primary-500) !important;
-}
-
-/* Active tab: solid primary bg + white text, like a selected navigation pill */
-/* Element Plus uses effect="dark" for active, which maps to .el-tag--dark */
-.tab-item.el-tag--dark {
-  background: var(--color-primary-500) !important;
-  border-color: var(--color-primary-500) !important;
-  color: #ffffff !important;
-  font-weight: 600;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.25);
+  background-color: var(--color-gray-50);
 }
 
 /* ===== Content Area ===== */

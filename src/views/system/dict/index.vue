@@ -360,7 +360,7 @@ onMounted(() => {
           </el-table-column>
           <el-table-column prop="name" label="字典名称" min-width="140" />
           <el-table-column prop="description" label="描述" min-width="200" show-overflow-tooltip />
-          <el-table-column v-if="userStore.hasPermission(['system:dict:view', 'system:dict:update', 'system:dict:delete'])" label="操作" width="180" fixed="right">
+          <el-table-column v-if="userStore.hasPermission(['system:dict:view', 'system:dict:update', 'system:dict:delete'])" label="操作" width="200" fixed="right">
             <template #default="{ row }">
               <el-button link type="primary" size="small" @click="handleViewItems(row)">
                 字典项
@@ -423,7 +423,7 @@ onMounted(() => {
           <el-table-column prop="sort_order" label="排序" width="80" align="center" />
           <el-table-column prop="description" label="描述" min-width="180" show-overflow-tooltip />
           <el-table-column prop="created_at" label="创建时间" width="180" />
-          <el-table-column v-if="userStore.hasPermission(['system:dict:update', 'system:dict:delete'])" label="操作" width="140" fixed="right">
+          <el-table-column v-if="userStore.hasPermission(['system:dict:update', 'system:dict:delete'])" label="操作" width="160" fixed="right">
             <template #default="{ row }">
               <el-button v-permission="'system:dict:update'" link type="primary" size="small" @click="handleEditItem(row)">
                 编辑
@@ -528,6 +528,8 @@ onMounted(() => {
 <style scoped lang="scss">
 .dict-management {
   padding: var(--space-6);
+  background: var(--bg-page);
+  min-height: 100%;
 }
 
 .card-header {

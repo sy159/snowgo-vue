@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { TabItem } from '@/store/tabs'
-import type { RouteLocationMatched } from 'vue-router'
-import { Expand, Fold, User } from '@element-plus/icons-vue'
+import { Expand, Fold, House } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SidebarItem from '@/components/Sidebar/SidebarItem.vue'
@@ -21,8 +20,6 @@ const activeMenu = computed(() => route.path)
 const breadcrumbs = computed(() => {
   const currentTitle = route.meta?.title as string
   if (!currentTitle) return []
-
-  const crumbs: string[] = []
 
   // 递归查找父级
   function findParent(items: any[], targetTitle: string, path: string[] = []): string[] | null {
@@ -134,6 +131,11 @@ onUnmounted(() => {
           :collapse="isCollapse"
           :router="true"
         >
+          <!-- 首页（管理台固定入口，不参与权限管理） -->
+          <el-menu-item index="/dashboard">
+            <el-icon><House /></el-icon>
+            <template #title>首页</template>
+          </el-menu-item>
           <!-- 动态菜单 -->
           <SidebarItem :menus="permissionStore.menuTree" />
         </el-menu>
@@ -159,11 +161,28 @@ onUnmounted(() => {
               </template>
             </div>
           </div>
+          <div class="header-center">
+            <!-- Tab 页签 -->
+            <div class="tabs-bar">
+              <el-tag
+                v-for="tab in tabsStore.visitedTabs"
+                :key="tab.path"
+                :closable="tab.closable"
+                :effect="tabsStore.activeTabPath === tab.path ? 'dark' : 'light'"
+                class="tab-item"
+                @click="handleTabClick(tab)"
+                @close="handleTabClose(tab)"
+                @contextmenu.prevent="openTabContextMenu($event, tab)"
+              >
+                {{ tab.title }}
+              </el-tag>
+            </div>
+          </div>
           <div class="header-right">
             <el-dropdown @command="handleCommand">
               <span class="user-info">
-                <el-icon><User /></el-icon>
-                {{ displayName }}
+                <div class="user-avatar">{{ displayName.charAt(0).toUpperCase() }}</div>
+                <span class="user-name">{{ displayName }}</span>
               </span>
               <template #dropdown>
                 <el-dropdown-menu>
@@ -175,22 +194,6 @@ onUnmounted(() => {
             </el-dropdown>
           </div>
         </el-header>
-
-        <!-- Tab 页签 -->
-        <div class="tabs-bar">
-          <el-tag
-            v-for="tab in tabsStore.visitedTabs"
-            :key="tab.path"
-            :closable="tab.closable"
-            :effect="tabsStore.activeTabPath === tab.path ? 'dark' : 'light'"
-            class="tab-item"
-            @click="handleTabClick(tab)"
-            @close="handleTabClose(tab)"
-            @contextmenu.prevent="openTabContextMenu($event, tab)"
-          >
-            {{ tab.title }}
-          </el-tag>
-        </div>
 
         <!-- 内容区 -->
         <el-main class="main">
@@ -236,56 +239,163 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 56px;
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--color-gray-200);
+  padding: 0 var(--space-6);
+  height: 64px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  position: relative;
+}
+
+/* Top bar */
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--color-gray-200);
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--space-4);
+  flex-shrink: 0;
+  min-width: 220px;
+}
+
+.collapse-btn {
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  transition: all var(--transition-fast);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.collapse-btn:hover {
+  color: var(--color-primary-500);
+  background-color: var(--color-primary-50);
 }
 
 .breadcrumb {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 14px;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  color: var(--text-secondary);
 }
 
 .breadcrumb-separator {
-  color: #9ca3af;
-  margin: 0 2px;
+  color: var(--text-tertiary);
+  font-size: var(--text-sm);
 }
 
 .breadcrumb-item {
-  color: #6b7280;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
 }
 
 .breadcrumb-item-active {
-  color: #111827;
-  font-weight: 500;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
-.header-right {
+/* Tabs left-aligned in header */
+.header-center {
+  flex: 1;
   display: flex;
-  align-items: center;
-}
-
-.user-info {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
+  justify-content: flex-start;
+  overflow: hidden;
+  padding-left: var(--space-4);
 }
 
 .tabs-bar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: var(--space-2);
+}
+
+.tab-item {
+  cursor: pointer;
+  border-radius: var(--radius-md) !important;
+  border: 1px solid var(--color-gray-200) !important;
+  padding: 0 var(--space-3) !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  font-size: var(--text-sm) !important;
+  transition: all var(--transition-fast) !important;
+  background: var(--bg-surface) !important;
+  color: var(--text-secondary) !important;
+}
+
+.tab-item:hover {
+  color: var(--color-primary-500) !important;
+  border-color: var(--color-primary-300) !important;
+  background: var(--color-primary-50) !important;
+}
+
+.tab-item.el-tag--dark {
+  background: var(--color-primary-50) !important;
+  color: var(--color-primary-600) !important;
+  border-color: var(--color-primary-300) !important;
+  font-weight: 500;
+}
+
+.tab-item.el-tag--dark:hover {
+  background: var(--color-primary-100) !important;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: var(--space-4);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-fast);
+}
+
+.user-info:hover {
+  background-color: var(--color-gray-50);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primary-400), var(--color-primary-600));
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.user-name {
+  color: var(--text-primary);
+  font-size: var(--text-sm);
+  font-weight: 500;
 }
 
 .main {
   overflow-y: auto;
+  background: var(--bg-page);
 }
 
 .context-menu {
@@ -294,12 +404,12 @@ onUnmounted(() => {
 }
 
 .context-menu-item {
-  padding: 8px 16px;
+  padding: var(--space-2) var(--space-4);
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--text-sm);
 }
 
 .context-menu-item:hover {
-  background: #f5f7fa;
+  background: var(--color-gray-50);
 }
 </style>

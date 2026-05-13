@@ -528,5 +528,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .user-management {
   padding: var(--space-6);
+  background: var(--bg-page);
+  min-height: 100%;
 }
 </style>

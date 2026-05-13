@@ -4,6 +4,7 @@ import { computed, ref } from 'vue'
 import { getStorageItem, setStorageItem } from '@/utils/storage'
 
 const TABS_KEY = 'visited_tabs'
+const MAX_TABS = 5
 
 export interface TabItem {
   name: string
@@ -13,7 +14,7 @@ export interface TabItem {
 }
 
 export const useTabsStore = defineStore('tabs', () => {
-  const visitedTabs = ref<TabItem[]>(getStorageItem<TabItem[]>(TABS_KEY) || [])
+  const visitedTabs = ref<TabItem[]>((getStorageItem<TabItem[]>(TABS_KEY) || []).slice(-MAX_TABS))
   const activeTabPath = ref<string>('')
 
   const tabPaths = computed(() => visitedTabs.value.map(tab => tab.path))
@@ -24,8 +25,13 @@ export const useTabsStore = defineStore('tabs', () => {
       return
 
     const path = route.path
-    if (tabPaths.value.includes(path)) {
+    const index = tabPaths.value.indexOf(path)
+    if (index !== -1) {
+      // 已存在：移到末尾
+      const [tab] = visitedTabs.value.splice(index, 1)
+      visitedTabs.value.push(tab)
       activeTabPath.value = path
+      saveTabs()
       return
     }
 
@@ -36,6 +42,10 @@ export const useTabsStore = defineStore('tabs', () => {
       closable: path !== '/dashboard',
     }
     visitedTabs.value.push(tab)
+    // 超过最大数量，移除最前面的
+    if (visitedTabs.value.length > MAX_TABS) {
+      visitedTabs.value.shift()
+    }
     activeTabPath.value = path
     saveTabs()
   }

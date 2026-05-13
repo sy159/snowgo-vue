@@ -1,3 +1,4 @@
+import type { MenuInfo } from '@/api/account/menu'
 import type { UserInfo } from '@/api/account/user'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
@@ -10,6 +11,7 @@ export const useUserStore = defineStore('user', () => {
   const token = ref<string>('')
   const userInfo = ref<UserInfo | null>(null)
   const permissions = ref<string[]>([])
+  const menuList = ref<MenuInfo[]>([])
 
   // 登录
   async function login(username: string, password: string) {
@@ -42,6 +44,7 @@ export const useUserStore = defineStore('user', () => {
         role_list: res.data.role_list,
       }
       permissions.value = res.data.permission_list?.map(p => p.perms) || []
+      menuList.value = res.data.menu_list || []
     }
     catch (err) {
       console.error('[user] fetchUserInfo failed:', err)
@@ -67,6 +70,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = ''
     userInfo.value = null
     permissions.value = []
+    menuList.value = []
     removeToken()
   }
 
@@ -80,6 +84,7 @@ export const useUserStore = defineStore('user', () => {
     token,
     userInfo,
     permissions,
+    menuList,
     login,
     logout,
     fetchUserInfo,

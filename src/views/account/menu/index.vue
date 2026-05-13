@@ -360,6 +360,8 @@ onMounted(() => {
 <style scoped lang="scss">
 .menu-management {
   padding: var(--space-6);
+  background: var(--bg-page);
+  min-height: 100%;
 }
 
 .text-muted {
