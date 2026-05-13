@@ -1,100 +1,234 @@
 <script setup lang="ts">
-import {
-  Clock,
-  Connection,
-  Document,
-  List,
-  Monitor,
-  Setting,
-  User,
-} from '@element-plus/icons-vue'
+import { Cpu, List, Monitor, Refresh, Setting, Timer } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/store'
+import type { SystemInfo } from '@/api/system/info'
+import { getSystemInfo } from '@/api/system/info'
 
 const router = useRouter()
 const userStore = useUserStore()
 
-// 当前日期
+const systemInfo = ref<SystemInfo | null>(null)
+const loading = ref(false)
+let timer: ReturnType<typeof setInterval> | null = null
+
 const currentDate = computed(() => {
   const now = new Date()
   const weekDays = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六']
   return `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${weekDays[now.getDay()]}`
 })
 
-// 当前时间（实时）
-const currentTime = ref('')
-let timer: ReturnType<typeof setInterval> | null = null
+const diskPercent = computed(() => {
+  if (!systemInfo.value) return 0
+  const { disk_used_gb, disk_total_gb } = systemInfo.value.os_info
+  return Math.round((disk_used_gb / disk_total_gb) * 100)
+})
+
+const diskStatusColor = computed(() => {
+  if (diskPercent.value >= 90) return 'var(--color-danger-500)'
+  if (diskPercent.value >= 70) return 'var(--color-warning-500)'
+  return 'var(--color-success-500)'
+})
+
+const envTagType = computed(() => {
+  const env = systemInfo.value?.service_info.env || ''
+  if (env === 'prod') return 'danger'
+  if (env === 'uat') return 'warning'
+  return 'success'
+})
+
+async function fetchSystemInfo() {
+  loading.value = true
+  try {
+    const res = await getSystemInfo()
+    systemInfo.value = res.data
+  }
+  finally {
+    loading.value = false
+  }
+}
+
+function handleNavigate(path: string) {
+  router.push(path)
+}
+
+const quickLinks = [
+  { label: '用户管理', path: '/account/user', icon: Monitor },
+  { label: '操作日志', path: '/system/log/operation', icon: Timer },
+  { label: '字典管理', path: '/system/dict', icon: List },
+  { label: '角色管理', path: '/account/role', icon: Setting },
+]
 
 onMounted(() => {
-  updateTime()
-  timer = setInterval(updateTime, 1000)
+  fetchSystemInfo()
+  timer = setInterval(fetchSystemInfo, 30000)
 })
 
 onUnmounted(() => {
   if (timer)
     clearInterval(timer)
 })
-
-function updateTime() {
-  const now = new Date()
-  currentTime.value = now.toLocaleString('zh-CN')
-}
-
-// 统计数据（占位数据）
-const statsData = [
-  { label: '用户总数', value: 1268, color: 'var(--color-primary-500)', icon: User },
-  { label: '系统日志', value: 5632, color: 'var(--color-success-500)', icon: Document },
-  { label: '在线用户', value: 42, color: 'var(--color-warning-500)', icon: Connection },
-  { label: '系统运行', value: 365, color: 'var(--color-info-500)', icon: Clock },
-]
-
-// 快捷入口
-const quickLinks = [
-  { label: '用户管理', path: '/account/user', color: 'var(--color-primary-500)', icon: User },
-  { label: '操作日志', path: '/system/log/operation', color: 'var(--color-success-500)', icon: Document },
-  { label: '字典管理', path: '/system/dict', color: 'var(--color-warning-500)', icon: List },
-  { label: '角色管理', path: '/account/role', color: 'var(--color-info-500)', icon: Setting },
-]
-
-function handleNavigate(path: string) {
-  router.push(path)
-}
 </script>
 
 <template>
   <div class="dashboard-container">
-    <!-- 欢迎区域 -->
-    <el-card class="welcome-card" shadow="hover">
-      <div class="welcome-content">
-        <div class="welcome-text">
-          <h1 class="welcome-title">
-            欢迎回来，{{ userStore.userInfo?.nickname || userStore.userInfo?.username || '管理员' }}！
-          </h1>
-          <p class="welcome-subtitle">
-            今天是 {{ currentDate }}，祝您工作愉快
-          </p>
+    <!-- 欢迎 + 快捷统计 -->
+    <el-row :gutter="20">
+      <el-col :xs="24" :lg="16">
+        <el-card shadow="hover" class="welcome-card">
+          <div class="welcome-content">
+            <div class="welcome-text">
+              <h1 class="welcome-title">
+                欢迎回来，{{ userStore.userInfo?.nickname || userStore.userInfo?.username || '管理员' }}
+              </h1>
+              <p class="welcome-subtitle">
+                {{ currentDate }}，祝您工作愉快
+              </p>
+            </div>
+            <el-button :icon="Refresh" circle @click="fetchSystemInfo" :loading="loading" />
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :lg="8">
+        <el-card shadow="hover" class="quick-stats-card">
+          <div class="quick-stats">
+            <div v-if="systemInfo" class="stat-item">
+              <el-tag :type="envTagType" size="small" effect="dark">
+                {{ systemInfo.service_info.env.toUpperCase() }}
+              </el-tag>
+              <span class="stat-label">运行环境</span>
+            </div>
+            <div v-if="systemInfo" class="stat-item">
+              <span class="stat-value">{{ systemInfo.service_info.uptime }}</span>
+              <span class="stat-label">运行时长</span>
+            </div>
+            <div v-if="systemInfo" class="stat-item">
+              <span class="stat-value">{{ systemInfo.go_runtime.goroutines }}</span>
+              <span class="stat-label">Goroutines</span>
+            </div>
+            <div v-if="systemInfo" class="stat-item">
+              <span class="stat-value">{{ systemInfo.go_runtime.mem_alloc_mb }} MB</span>
+              <span class="stat-label">内存占用</span>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <!-- Go Runtime -->
+    <el-card v-if="systemInfo" shadow="hover" class="section-card">
+      <template #header>
+        <div class="card-header">
+          <el-icon :size="18"><Cpu /></el-icon>
+          <span>Go Runtime</span>
         </div>
-        <div class="welcome-icon">
-          <el-icon :size="64" color="var(--color-primary-500)">
-            <Monitor />
-          </el-icon>
-        </div>
-      </div>
+      </template>
+      <el-row :gutter="16">
+        <el-col :xs="12" :sm="8" :md="4">
+          <div class="runtime-item">
+            <span class="runtime-label">Go 版本</span>
+            <span class="runtime-value">{{ systemInfo.go_runtime.go_version }}</span>
+          </div>
+        </el-col>
+        <el-col :xs="12" :sm="8" :md="4">
+          <div class="runtime-item">
+            <span class="runtime-label">CPU 核心</span>
+            <span class="runtime-value">{{ systemInfo.go_runtime.num_cpu }}</span>
+          </div>
+        </el-col>
+        <el-col :xs="12" :sm="8" :md="4">
+          <div class="runtime-item">
+            <span class="runtime-label">Goroutines</span>
+            <span class="runtime-value">{{ systemInfo.go_runtime.goroutines }}</span>
+          </div>
+        </el-col>
+        <el-col :xs="12" :sm="8" :md="4">
+          <div class="runtime-item">
+            <span class="runtime-label">GC 次数</span>
+            <span class="runtime-value">{{ systemInfo.go_runtime.gc_count }}</span>
+          </div>
+        </el-col>
+        <el-col :xs="12" :sm="8" :md="4">
+          <div class="runtime-item">
+            <span class="runtime-label">已分配</span>
+            <span class="runtime-value">{{ systemInfo.go_runtime.mem_alloc_mb }} MB</span>
+          </div>
+        </el-col>
+        <el-col :xs="12" :sm="8" :md="4">
+          <div class="runtime-item">
+            <span class="runtime-label">总分配</span>
+            <span class="runtime-value">{{ systemInfo.go_runtime.mem_total_mb }} MB</span>
+          </div>
+        </el-col>
+        <el-col :xs="12" :sm="8" :md="4">
+          <div class="runtime-item">
+            <span class="runtime-label">系统内存</span>
+            <span class="runtime-value">{{ systemInfo.go_runtime.mem_sys_mb }} MB</span>
+          </div>
+        </el-col>
+      </el-row>
     </el-card>
 
-    <!-- 数据统计 -->
-    <el-row :gutter="20" class="stats-row">
-      <el-col v-for="stat in statsData" :key="stat.label" :xs="24" :sm="12" :lg="6">
-        <el-card shadow="hover" class="stat-card">
-          <div class="stat-content">
-            <div class="stat-icon" :style="{ backgroundColor: stat.color }">
-              <el-icon :size="28" color="#fff">
-                <component :is="stat.icon" />
-              </el-icon>
+    <!-- 服务器信息 + 磁盘 -->
+    <el-row v-if="systemInfo" :gutter="20">
+      <el-col :xs="24" :md="12">
+        <el-card shadow="hover" class="section-card">
+          <template #header>
+            <div class="card-header">
+              <el-icon :size="18"><Setting /></el-icon>
+              <span>服务器信息</span>
             </div>
-            <div class="stat-info">
-              <el-statistic :value="stat.value" :title="stat.label" />
+          </template>
+          <el-descriptions :column="1" border>
+            <el-descriptions-item label="服务名称">
+              {{ systemInfo.service_info.name }}
+            </el-descriptions-item>
+            <el-descriptions-item label="服务版本">
+              {{ systemInfo.service_info.version }}
+            </el-descriptions-item>
+            <el-descriptions-item label="操作系统">
+              {{ systemInfo.os_info.os }} / {{ systemInfo.os_info.arch }}
+            </el-descriptions-item>
+            <el-descriptions-item label="主机名">
+              {{ systemInfo.os_info.hostname }}
+            </el-descriptions-item>
+            <el-descriptions-item label="启动时间">
+              {{ systemInfo.service_info.start_time }}
+            </el-descriptions-item>
+          </el-descriptions>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :md="12">
+        <el-card shadow="hover" class="section-card">
+          <template #header>
+            <div class="card-header">
+              <el-icon :size="18"><Monitor /></el-icon>
+              <span>磁盘使用</span>
+            </div>
+          </template>
+          <div class="disk-info">
+            <div class="disk-visual">
+              <el-progress
+                type="dashboard"
+                :percentage="diskPercent"
+                :color="diskStatusColor"
+                :stroke-width="12"
+              />
+            </div>
+            <div class="disk-details">
+              <div class="disk-row">
+                <span class="disk-label">已使用</span>
+                <span class="disk-value">{{ systemInfo.os_info.disk_used_gb }} GB</span>
+              </div>
+              <div class="disk-row">
+                <span class="disk-label">总容量</span>
+                <span class="disk-value">{{ systemInfo.os_info.disk_total_gb }} GB</span>
+              </div>
+              <div class="disk-row">
+                <span class="disk-label">可用</span>
+                <span class="disk-value">{{ systemInfo.os_info.disk_free_gb }} GB</span>
+              </div>
             </div>
           </div>
         </el-card>
@@ -105,42 +239,20 @@ function handleNavigate(path: string) {
     <el-card shadow="hover" class="section-card">
       <template #header>
         <div class="card-header">
+          <el-icon :size="18"><List /></el-icon>
           <span>快捷入口</span>
         </div>
       </template>
       <el-row :gutter="16">
         <el-col v-for="link in quickLinks" :key="link.label" :xs="12" :sm="8" :md="6">
           <div class="quick-link" @click="handleNavigate(link.path)">
-            <el-icon :size="24" :color="link.color">
+            <el-icon :size="24">
               <component :is="link.icon" />
             </el-icon>
             <span class="quick-link-label">{{ link.label }}</span>
           </div>
         </el-col>
       </el-row>
-    </el-card>
-
-    <!-- 系统信息 -->
-    <el-card shadow="hover" class="section-card">
-      <template #header>
-        <div class="card-header">
-          <span>系统信息</span>
-        </div>
-      </template>
-      <el-descriptions :column="2" border>
-        <el-descriptions-item label="系统名称">
-          SnowGo 管理平台
-        </el-descriptions-item>
-        <el-descriptions-item label="当前版本">
-          v1.0.0
-        </el-descriptions-item>
-        <el-descriptions-item label="登录账号">
-          {{ userStore.userInfo?.username || '-' }}
-        </el-descriptions-item>
-        <el-descriptions-item label="登录时间">
-          {{ currentTime }}
-        </el-descriptions-item>
-      </el-descriptions>
     </el-card>
   </div>
 </template>
@@ -150,11 +262,12 @@ function handleNavigate(path: string) {
   padding: var(--space-6);
 }
 
+/* ===== Welcome ===== */
 .welcome-card {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 
   :deep(.el-card__body) {
-    padding: 24px;
+    padding: var(--space-6);
   }
 }
 
@@ -165,97 +278,148 @@ function handleNavigate(path: string) {
 }
 
 .welcome-title {
-  margin: 0 0 8px;
-  font-size: 24px;
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-xl);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .welcome-subtitle {
   margin: 0;
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: var(--text-tertiary);
 }
 
-.welcome-icon {
-  opacity: 0.15;
-}
-
-.stats-row {
-  margin-bottom: 20px;
-}
-
-.stat-card {
-  margin-bottom: 16px;
+/* ===== Quick Stats ===== */
+.quick-stats-card {
+  margin-bottom: var(--space-5);
 
   :deep(.el-card__body) {
-    padding: 16px;
+    padding: var(--space-4) var(--space-6);
   }
 }
 
-.stat-content {
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.stat-item {
   display: flex;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  gap: var(--space-1);
 }
 
-.stat-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: var(--radius-lg);
-}
-
-.stat-info {
-  flex: 1;
-
-  :deep(.el-statistic__head) {
-    font-size: 13px;
-    color: var(--text-tertiary);
-    margin-bottom: 4px;
-  }
-
-  :deep(.el-statistic__content) {
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--text-primary);
-  }
-}
-
-.section-card {
-  margin-bottom: 20px;
-}
-
-.card-header {
-  font-size: 16px;
+.stat-value {
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--text-primary);
 }
 
+.stat-label {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+}
+
+/* ===== Section Cards ===== */
+.section-card {
+  margin-bottom: var(--space-5);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ===== Go Runtime ===== */
+.runtime-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: var(--space-4) var(--space-2);
+  background: var(--color-gray-25);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+}
+
+.runtime-label {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-1);
+}
+
+.runtime-value {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* ===== Disk ===== */
+.disk-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-4) 0;
+}
+
+.disk-visual {
+  flex-shrink: 0;
+}
+
+.disk-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+}
+
+.disk-row {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-gray-100);
+}
+
+.disk-label {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+}
+
+.disk-value {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ===== Quick Links ===== */
 .quick-link {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px 12px;
+  padding: var(--space-5) var(--space-3);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all var(--transition-base);
   background-color: var(--color-gray-100);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
+  color: var(--text-secondary);
 
   &:hover {
     background-color: var(--color-primary-50);
+    color: var(--color-primary-500);
     transform: translateY(-2px);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
   }
 }
 
 .quick-link-label {
-  margin-top: 8px;
-  font-size: 14px;
-  color: var(--text-secondary);
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
 }
 </style>
