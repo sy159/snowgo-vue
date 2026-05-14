@@ -104,13 +104,42 @@ async function loadMenuTree(showAll: boolean) {
   menuLoading.value = true
   try {
     if (showAll) {
-      // 编辑角色：通过 menu 接口获取所有菜单
       const res = await getMenuList()
       menuTree.value = res.data
     }
     else {
-      // 新增角色：只显示当前用户已有的菜单（来自权限接口的 menu_list）
-      menuTree.value = userStore.menuList
+      // 新增角色：只显示当前用户已有的菜单，并补全 Btn 子节点
+      const res = await getMenuList()
+      const fullTree = res.data
+
+      const userMenuIds = new Set<number>()
+      function collectIds(nodes: MenuInfo[]) {
+        for (const n of nodes) {
+          userMenuIds.add(n.id)
+          if (n.children?.length) collectIds(n.children)
+        }
+      }
+      collectIds(userStore.menuList)
+
+      function filterTree(nodes: MenuInfo[]): MenuInfo[] {
+        const result: MenuInfo[] = []
+        for (const n of nodes) {
+          if (n.menu_type === 'Btn') {
+            if (userMenuIds.has(n.parent_id)) {
+              result.push({ ...n, children: [] })
+            }
+          }
+          else if (userMenuIds.has(n.id)) {
+            result.push({
+              ...n,
+              children: n.children ? filterTree(n.children) : [],
+            })
+          }
+        }
+        return result
+      }
+
+      menuTree.value = filterTree(fullTree)
     }
   }
   catch {
