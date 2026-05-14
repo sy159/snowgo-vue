@@ -57,10 +57,8 @@ async function registerRoutes() {
 
   for (const route of pageRoutes) {
     router.addRoute(route)
-    // name is on the child route, not the parent
-    const child = route.children?.[0]
-    if (child?.name) {
-      registeredRouteNames.push(child.name as string)
+    if (route.name) {
+      registeredRouteNames.push(route.name as string)
     }
   }
 

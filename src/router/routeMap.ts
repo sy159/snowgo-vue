@@ -36,6 +36,7 @@ export function buildRoutes(menuList: MenuInfo[]): RouteRecordRaw[] {
         const routeName = pathToName(item.path)
         routes.push({
           path: item.path,
+          name: `layout-${routeName}`,
           component: Layout,
           children: [
             {
