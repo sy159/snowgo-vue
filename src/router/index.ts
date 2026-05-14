@@ -4,7 +4,7 @@ import { getToken } from '@/utils/storage'
 
 const Layout = () => import('@/components/Layout/index.vue')
 
-// ========== 静态路由（全量注册，由后端菜单控制侧边栏可见性） ==========
+// ========== 基础路由（登录页、首页、404） ==========
 const routes: RouteRecordRaw[] = [
   {
     path: '/login',
@@ -13,53 +13,20 @@ const routes: RouteRecordRaw[] = [
     meta: { title: '登录', hidden: true },
   },
   {
-    path: '/',
+    path: '/dashboard',
     component: Layout,
-    redirect: '/dashboard',
     children: [
       {
-        path: 'dashboard',
+        path: '',
         name: 'Dashboard',
         component: () => import('@/views/dashboard/index.vue'),
-        meta: { title: '首页', icon: 'House' },
-      },
-      {
-        path: 'account/user',
-        name: 'AccountUser',
-        component: () => import('@/views/account/user/index.vue'),
-        meta: { title: '用户管理' },
-      },
-      {
-        path: 'account/role',
-        name: 'AccountRole',
-        component: () => import('@/views/account/role/index.vue'),
-        meta: { title: '角色管理' },
-      },
-      {
-        path: 'account/menu',
-        name: 'AccountMenu',
-        component: () => import('@/views/account/menu/index.vue'),
-        meta: { title: '菜单管理' },
-      },
-      {
-        path: 'system/dict',
-        name: 'SystemDict',
-        component: () => import('@/views/system/dict/index.vue'),
-        meta: { title: '字典管理' },
-      },
-      {
-        path: 'system/log/operation',
-        name: 'SystemOperationLog',
-        component: () => import('@/views/system/log/operation/index.vue'),
-        meta: { title: '操作日志' },
-      },
-      {
-        path: 'system/log/login',
-        name: 'SystemLoginLog',
-        component: () => import('@/views/system/log/login/index.vue'),
-        meta: { title: '登录日志' },
+        meta: { title: '首页' },
       },
     ],
+  },
+  {
+    path: '/',
+    redirect: '/dashboard',
   },
   {
     path: '/:pathMatch(.*)*',
@@ -74,6 +41,37 @@ const router = createRouter({
   routes,
 })
 
+// ========== 动态路由注册 ==========
+let dynamicRoutesRegistered = false
+let registeredRouteNames: string[] = []
+
+async function registerRoutes() {
+  if (dynamicRoutesRegistered) return
+
+  const { useUserStore } = await import('@/store')
+  const userStore = useUserStore()
+  if (!userStore.menuList.length) return
+
+  const { buildRoutes } = await import('@/router/routeMap')
+  const pageRoutes = buildRoutes(userStore.menuList)
+
+  // v5 要求路由均为绝对路径的顶层路由
+  for (const route of pageRoutes) {
+    router.addRoute(route)
+    registeredRouteNames.push(route.name as string)
+  }
+
+  dynamicRoutesRegistered = true
+}
+
+export function removeDynamicRoutes() {
+  for (const name of registeredRouteNames) {
+    router.removeRoute(name)
+  }
+  registeredRouteNames = []
+  dynamicRoutesRegistered = false
+}
+
 // ========== 路由守卫 ==========
 router.beforeEach(async (to, _from) => {
   const token = getToken()
@@ -84,17 +82,29 @@ router.beforeEach(async (to, _from) => {
     return true
   }
 
-  // 已登录访问登录页：跳转到首页
   if (to.path === '/login')
     return '/dashboard'
 
-  // 页面刷新后重新加载用户信息和权限
+  // 页面刷新后重新加载用户信息和动态路由
   const { useUserStore } = await import('@/store')
   const userStore = useUserStore()
   if (!userStore.permissions.length) {
     await userStore.fetchUserInfo()
     const { usePermissionStore } = await import('@/store')
     await usePermissionStore().fetchMenuTree()
+  }
+
+  const wasRegistered = dynamicRoutesRegistered
+  await registerRoutes()
+
+  // 刚注册完路由，需要重新导航让路由树重新匹配
+  if (!wasRegistered && dynamicRoutesRegistered) {
+    return to.fullPath
+  }
+
+  // 目标路由未注册（无权限）→ 由 catch-all 路由接管，显示 404
+  if (to.name && to.name !== 'NotFound' && !router.hasRoute(to.name)) {
+    return true
   }
 
   return true

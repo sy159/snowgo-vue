@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getUserPermission } from '@/api/account/user'
 import { login as loginApi, logout as logoutApi } from '@/api/auth'
-import router from '@/router'
+import router, { removeDynamicRoutes } from '@/router'
 import { removeToken, setToken } from '@/utils/storage'
 
 export const useUserStore = defineStore('user', () => {
@@ -61,6 +61,7 @@ export const useUserStore = defineStore('user', () => {
       // 清空持久化的 tabs
       const { useTabsStore } = await import('@/store')
       useTabsStore().clearTabs()
+      removeDynamicRoutes()
       router.push('/login')
     }
   }
