@@ -58,9 +58,10 @@ export const useUserStore = defineStore('user', () => {
     }
     finally {
       resetState()
-      // 清空持久化的 tabs
-      const { useTabsStore } = await import('@/store')
+      // 清空持久化的 tabs 和权限菜单
+      const { useTabsStore, usePermissionStore } = await import('@/store')
       useTabsStore().clearTabs()
+      usePermissionStore().reset()
       router.push('/login')
     }
   }
