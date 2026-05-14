@@ -3,7 +3,6 @@ import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { getRefreshToken, getToken, removeToken, setToken } from '@/utils/storage'
-import router from '@/router'
 
 // Token 刷新锁 + 请求队列
 let isRefreshing = false
@@ -31,6 +30,10 @@ async function doRefreshToken(): Promise<string> {
     access_expire_timestamp: number
     refresh_expire_timestamp: number
   }>>(`${import.meta.env.VITE_API_BASE_URL}/api/admin/auth/refresh-token`, { refresh_token })
+
+  if (res.data.code !== 0) {
+    throw new Error(res.data.msg || 'Token refresh failed')
+  }
 
   const { access_token, refresh_token: newRefresh, access_expire_timestamp, refresh_expire_timestamp } = res.data.data
   setToken(access_token, newRefresh, access_expire_timestamp, refresh_expire_timestamp)
@@ -182,7 +185,7 @@ class Request {
   private handleTokenExpired(): void {
     removeToken()
     ElMessage.error('登录已过期，请重新登录')
-    router.push('/login')
+    location.replace('/login')
   }
 
   private handleHttpError(status: number, message?: string): void {

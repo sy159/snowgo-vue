@@ -90,9 +90,16 @@ router.beforeEach(async (to, _from) => {
   const { useUserStore } = await import('@/store')
   const userStore = useUserStore()
   if (!userStore.permissions.length) {
-    await userStore.fetchUserInfo()
-    const { usePermissionStore } = await import('@/store')
-    await usePermissionStore().fetchMenuTree()
+    try {
+      await userStore.fetchUserInfo()
+      const { usePermissionStore } = await import('@/store')
+      await usePermissionStore().fetchMenuTree()
+    }
+    catch {
+      // fetchUserInfo / fetchMenuTree 中已通过 handleTokenExpired 做 location.replace
+      // 这里 return false 取消当前导航，等待硬跳转
+      return false
+    }
   }
 
   const wasRegistered = dynamicRoutesRegistered
