@@ -31,8 +31,8 @@ async function fetchData() {
     const res = await getMenuList()
     tableData.value = res.data
   }
-  catch (_e: unknown) {
-    // 错误已由 axios 拦截器处理
+  catch (err) {
+    console.error('[menu] request failed:', err)
   }
   finally {
     loading.value = false
@@ -187,8 +187,8 @@ async function handleSubmit() {
       dialogVisible.value = false
       fetchData()
     }
-    catch (_e: unknown) {
-      // 错误已由拦截器处理
+    catch (err) {
+      console.error('[menu] request failed:', err)
     }
     finally {
       submitting.value = false

@@ -58,8 +58,8 @@ async function fetchDictList() {
     dictList.value = res.data.list
     pagination.total = res.data.total
   }
-  catch {
-    // 错误已由 axios 拦截器处理
+  catch (err) {
+    console.error('[dict] request failed:', err)
   }
   finally {
     dictLoading.value = false
@@ -80,8 +80,8 @@ async function fetchItemList() {
     const res = await getItemListByDictCode(selectedDict.value.code)
     itemList.value = res.data
   }
-  catch {
-    // 错误已由 axios 拦截器处理
+  catch (err) {
+    console.error('[dict] request failed:', err)
   }
   finally {
     itemLoading.value = false
@@ -146,8 +146,8 @@ async function handleDictSubmit() {
       dictDialogVisible.value = false
       fetchDictList()
     }
-    catch {
-      // 错误已由拦截器处理
+    catch (err) {
+      console.error('[dict] request failed:', err)
     }
     finally {
       dictSubmitting.value = false
@@ -261,8 +261,8 @@ async function handleItemSubmit() {
       itemDialogVisible.value = false
       fetchItemList()
     }
-    catch {
-      // 错误已由拦截器处理
+    catch (err) {
+      console.error('[dict] request failed:', err)
     }
     finally {
       itemSubmitting.value = false

@@ -16,8 +16,8 @@ async function loadResourceOptions() {
     const res = await getItemListByDictCode('operation_resource')
     resourceOptions.value = res.data
   }
-  catch {
-    // 错误已由拦截器处理
+  catch (err) {
+    console.error('[operation-log] request failed:', err)
   }
 }
 
@@ -59,8 +59,8 @@ async function fetchList() {
     tableData.value = res.data.list
     pagination.total = res.data.total
   }
-  catch {
-    // 错误已由 axios 拦截器处理
+  catch (err) {
+    console.error('[operation-log] request failed:', err)
   }
   finally {
     loading.value = false

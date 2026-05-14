@@ -19,36 +19,29 @@ export const useUserStore = defineStore('user', () => {
     setToken(res.data.access_token, res.data.refresh_token, res.data.access_expire_timestamp, res.data.refresh_expire_timestamp)
     token.value = res.data.access_token
     await fetchUserInfo()
-    // 登录后立即加载菜单树
     const { usePermissionStore } = await import('@/store')
     await usePermissionStore().fetchMenuTree()
   }
 
   // 获取用户信息和权限
   async function fetchUserInfo() {
-    try {
-      const res = await getUserPermission()
-      // 后端返回扁平结构：username, nickname, permission_list 等
-      userInfo.value = {
-        id: res.data.id,
-        username: res.data.username,
-        tel: res.data.tel,
-        nickname: res.data.nickname,
-        status: res.data.status,
-        email: res.data.email,
-        remark: res.data.remark,
-        created_by: res.data.created_by,
-        updated_by: res.data.updated_by,
-        created_at: res.data.created_at,
-        updated_at: res.data.updated_at,
-        role_list: res.data.role_list,
-      }
-      permissions.value = res.data.permission_list?.map(p => p.perms) || []
-      menuList.value = res.data.menu_list || []
+    const res = await getUserPermission()
+    userInfo.value = {
+      id: res.data.id,
+      username: res.data.username,
+      tel: res.data.tel,
+      nickname: res.data.nickname,
+      status: res.data.status,
+      email: res.data.email,
+      remark: res.data.remark,
+      created_by: res.data.created_by,
+      updated_by: res.data.updated_by,
+      created_at: res.data.created_at,
+      updated_at: res.data.updated_at,
+      role_list: res.data.role_list,
     }
-    catch (err) {
-      console.error('[user] fetchUserInfo failed:', err)
-    }
+    permissions.value = res.data.permission_list?.map(p => p.perms) || []
+    menuList.value = res.data.menu_list || []
   }
 
   // 登出

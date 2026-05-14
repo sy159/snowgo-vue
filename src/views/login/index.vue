@@ -35,8 +35,8 @@ async function handleLogin(): Promise<void> {
       ElMessage.success('登录成功')
       router.push('/')
     }
-    catch {
-      // 错误已在 request 拦截器处理
+    catch (err) {
+      console.error('[login] login failed:', err)
     }
     finally {
       loading.value = false

@@ -26,8 +26,8 @@ async function loadRoleOptions() {
     const res = await getRoleList({ offset: 0, limit: 100 })
     roleOptions.value = res.data.list
   }
-  catch {
-    // 错误已由拦截器处理
+  catch (err) {
+    console.error('[user] request failed:', err)
   }
 }
 
@@ -71,8 +71,8 @@ async function fetchData() {
     tableData.value = res.data.list
     pagination.total = res.data.total
   }
-  catch (_e: unknown) {
-    // 错误已由 axios 拦截器处理
+  catch (err) {
+    console.error('[user] request failed:', err)
   }
   finally {
     loading.value = false
@@ -165,8 +165,8 @@ async function handleEdit(row: UserInfo) {
     const res = await getUserById(row.id)
     form.role_ids = res.data.role_list?.map(r => r.id) || []
   }
-  catch {
-    // 错误已由拦截器处理
+  catch (err) {
+    console.error('[user] request failed:', err)
   }
   dialogVisible.value = true
 }
@@ -197,8 +197,8 @@ async function handleSubmit() {
       dialogVisible.value = false
       fetchData()
     }
-    catch (_e: unknown) {
-      // 错误已由拦截器处理
+    catch (err) {
+      console.error('[user] request failed:', err)
     }
     finally {
       submitting.value = false
@@ -269,8 +269,8 @@ async function handlePwdSubmit() {
       ElMessage.success('密码重置成功')
       pwdDialogVisible.value = false
     }
-    catch (_e: unknown) {
-      // 错误已由拦截器处理
+    catch (err) {
+      console.error('[user] request failed:', err)
     }
     finally {
       pwdSubmitting.value = false

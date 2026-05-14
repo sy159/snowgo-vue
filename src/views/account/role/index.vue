@@ -48,8 +48,8 @@ async function fetchData() {
     tableData.value = res.data.list
     pagination.total = res.data.total
   }
-  catch (_e: unknown) {
-    // 错误已由 axios 拦截器处理
+  catch (err) {
+    console.error('[role] request failed:', err)
   }
   finally {
     loading.value = false
@@ -142,8 +142,8 @@ async function loadMenuTree(showAll: boolean) {
       menuTree.value = filterTree(fullTree)
     }
   }
-  catch {
-    // 错误已由拦截器处理
+  catch (err) {
+    console.error('[role] request failed:', err)
   }
   finally {
     menuLoading.value = false
@@ -187,8 +187,8 @@ async function handleEdit(row: RoleInfo) {
       checkedMenuIds.value = res.data.menu_ids.filter(id => leafSet.has(id))
     }
   }
-  catch {
-    // 错误已由拦截器处理
+  catch (err) {
+    console.error('[role] request failed:', err)
   }
 
   dialogVisible.value = true
@@ -196,8 +196,8 @@ async function handleEdit(row: RoleInfo) {
 
 async function handleSubmit() {
   // 非严格模式下：获取所有勾选节点（含父级联动产生的）
-  const checkedKeys = menuTreeRef.value?.getCheckedKeys() as number[]
-  const halfCheckedKeys = menuTreeRef.value?.getHalfCheckedKeys() as number[]
+  const checkedKeys = (menuTreeRef.value?.getCheckedKeys() as number[]) ?? []
+  const halfCheckedKeys = (menuTreeRef.value?.getHalfCheckedKeys() as number[]) ?? []
   form.menu_ids = [...halfCheckedKeys, ...checkedKeys]
 
   if (!form.name || !form.code) {
@@ -218,8 +218,8 @@ async function handleSubmit() {
     dialogVisible.value = false
     fetchData()
   }
-  catch {
-    // 错误已由拦截器处理
+  catch (err) {
+    console.error('[role] request failed:', err)
   }
   finally {
     submitting.value = false

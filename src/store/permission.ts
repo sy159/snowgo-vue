@@ -11,7 +11,7 @@ export const usePermissionStore = defineStore('permission', () => {
       return
     const userStore = useUserStore()
     // 直接使用用户权限接口返回的 menu_list，后端已按权限过滤
-    menuTree.value = [...userStore.menuList]
+    menuTree.value = structuredClone(userStore.menuList)
   }
 
   function reset(): void {

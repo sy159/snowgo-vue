@@ -3,6 +3,7 @@ import type { AxiosInstance, AxiosRequestConfig } from 'axios'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { getRefreshToken, getToken, removeToken, setToken } from '@/utils/storage'
+import router from '@/router'
 
 // Token 刷新锁 + 请求队列
 let isRefreshing = false
@@ -149,6 +150,7 @@ class Request {
             catch (refreshError) {
               onRefreshFailed(refreshError)
               this.handleTokenExpired()
+              return Promise.reject(refreshError)
             }
             finally {
               isRefreshing = false
@@ -180,11 +182,14 @@ class Request {
   private handleTokenExpired(): void {
     removeToken()
     ElMessage.error('登录已过期，请重新登录')
-    window.location.href = '/login'
+    router.push('/login')
   }
 
   private handleHttpError(status: number, message?: string): void {
     switch (status) {
+      case 401:
+        this.handleTokenExpired()
+        break
       case 403:
         ElMessage.error('没有权限访问')
         break

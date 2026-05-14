@@ -43,8 +43,8 @@ async function fetchList() {
     tableData.value = res.data.list
     pagination.total = res.data.total
   }
-  catch {
-    // 错误已由 axios 拦截器处理
+  catch (err) {
+    console.error('[login-log] request failed:', err)
   }
   finally {
     loading.value = false

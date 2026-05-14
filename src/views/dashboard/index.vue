@@ -22,6 +22,7 @@ const currentDate = computed(() => {
 const diskPercent = computed(() => {
   if (!systemInfo.value) return 0
   const { disk_used_gb, disk_total_gb } = systemInfo.value.os_info
+  if (!disk_total_gb) return 0
   return Math.round((disk_used_gb / disk_total_gb) * 100)
 })
 
@@ -43,6 +44,9 @@ async function fetchSystemInfo() {
   try {
     const res = await getSystemInfo()
     systemInfo.value = res.data
+  }
+  catch (err) {
+    console.error('[dashboard] fetchSystemInfo failed:', err)
   }
   finally {
     loading.value = false

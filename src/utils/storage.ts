@@ -35,7 +35,7 @@ export function getStorageItem<T>(key: string): T | null {
     return JSON.parse(item) as T
   }
   catch {
-    return item as T
+    return null
   }
 }
 
