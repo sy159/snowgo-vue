@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { getUserPermission } from '@/api/account/user'
 import { login as loginApi, logout as logoutApi } from '@/api/auth'
-import router from '@/router'
+import router, { removeDynamicRoutes } from '@/router'
 import { removeToken, setToken } from '@/utils/storage'
 
 export const useUserStore = defineStore('user', () => {
@@ -58,10 +58,11 @@ export const useUserStore = defineStore('user', () => {
     }
     finally {
       resetState()
-      // 清空持久化的 tabs 和权限菜单
+      // 清空持久化的 tabs 和权限菜单，移除动态路由
       const { useTabsStore, usePermissionStore } = await import('@/store')
       useTabsStore().clearTabs()
       usePermissionStore().reset()
+      removeDynamicRoutes()
       router.push('/login')
     }
   }
