@@ -3,7 +3,7 @@ FROM node:22-alpine AS build-stage
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --production=false
+RUN npm ci
 
 COPY . .
 RUN npm run build

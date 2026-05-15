@@ -3,8 +3,6 @@ services:
     build: .
     ports:
       - '80:80'
-    depends_on:
-      - backend
     networks:
       - app-network
 

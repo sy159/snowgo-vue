@@ -52,4 +52,3 @@ docker-down:
 # Cleanup
 clean:
 	rm -rf dist
-	rm -rf node_modules
