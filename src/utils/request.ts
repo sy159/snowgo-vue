@@ -29,7 +29,7 @@ async function doRefreshToken(): Promise<string> {
     refresh_token: string
     access_expire_timestamp: number
     refresh_expire_timestamp: number
-  }>>(`${import.meta.env.VITE_API_BASE_URL}/api/admin/auth/refresh-token`, { refresh_token })
+  }>>(`${import.meta.env.VITE_API_BASE_URL}/api/admin/auth/refresh-token`, { refresh_token }, { timeout: 10000 })
 
   if (res.data.code !== 0) {
     throw new Error(res.data.msg || 'Token refresh failed')

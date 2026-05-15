@@ -32,7 +32,11 @@ export function buildRoutes(menuList: MenuInfo[]): RouteRecordRaw[] {
 
   function traverse(items: MenuInfo[]) {
     for (const item of items) {
-      if (item.menu_type === 'Menu' && item.path && routeMap[item.path]) {
+      if (item.menu_type === 'Menu' && item.path) {
+        if (!routeMap[item.path]) {
+          console.warn(`[router] No component mapping for menu path: "${item.path}"`)
+          continue
+        }
         const routeName = pathToName(item.path)
         routes.push({
           path: item.path,

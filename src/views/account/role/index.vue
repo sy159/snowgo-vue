@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { FormInstance } from 'element-plus'
 import type { MenuInfo } from '@/api/account/menu'
 import type { RoleInfo, RoleListCondition, RoleParam } from '@/api/account/role'
 import { Plus, Refresh, Search } from '@element-plus/icons-vue'
@@ -79,6 +80,8 @@ const form = reactive<RoleParam>({
   description: '',
   menu_ids: [],
 })
+
+const formRef = ref<FormInstance>()
 
 const formRules: Record<string, any> = {
   name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
@@ -197,35 +200,36 @@ async function handleEdit(row: RoleInfo) {
 }
 
 async function handleSubmit() {
-  // 非严格模式下：获取所有勾选节点（含父级联动产生的）
-  const checkedKeys = (menuTreeRef.value?.getCheckedKeys() as number[]) ?? []
-  const halfCheckedKeys = (menuTreeRef.value?.getHalfCheckedKeys() as number[]) ?? []
-  form.menu_ids = [...halfCheckedKeys, ...checkedKeys]
-
-  if (!form.name || !form.code) {
-    ElMessage.warning('请填写必填项')
+  if (!formRef.value)
     return
-  }
+  await formRef.value.validate(async (valid) => {
+    if (!valid)
+      return
+    // 非严格模式下：获取所有勾选节点（含父级联动产生的）
+    const checkedKeys = (menuTreeRef.value?.getCheckedKeys() as number[]) ?? []
+    const halfCheckedKeys = (menuTreeRef.value?.getHalfCheckedKeys() as number[]) ?? []
+    form.menu_ids = [...halfCheckedKeys, ...checkedKeys]
 
-  submitting.value = true
-  try {
-    if (isEdit.value) {
-      await updateRole({ ...form })
-      ElMessage.success('更新成功')
+    submitting.value = true
+    try {
+      if (isEdit.value) {
+        await updateRole({ ...form })
+        ElMessage.success('更新成功')
+      }
+      else {
+        await createRole({ ...form })
+        ElMessage.success('创建成功')
+      }
+      dialogVisible.value = false
+      fetchData()
     }
-    else {
-      await createRole({ ...form })
-      ElMessage.success('创建成功')
+    catch (err) {
+      console.error('[role] request failed:', err)
     }
-    dialogVisible.value = false
-    fetchData()
-  }
-  catch (err) {
-    console.error('[role] request failed:', err)
-  }
-  finally {
-    submitting.value = false
-  }
+    finally {
+      submitting.value = false
+    }
+  })
 }
 
 function handleDialogClose() {
@@ -341,6 +345,7 @@ onMounted(() => {
       @closed="handleDialogClose"
     >
       <el-form
+        ref="formRef"
         :model="form"
         :rules="formRules"
         label-width="80px"
