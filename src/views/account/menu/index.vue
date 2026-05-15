@@ -67,11 +67,8 @@ async function fetchData() {
 }
 
 // 菜单树选项（用于 el-tree-select，包含根节点）
-interface MenuTreeOption {
-  id: number
-  name: string
+interface MenuTreeNode extends MenuInfo {
   menu_type: 'Dir' | 'Menu' | 'Btn' | 'Root'
-  children: (MenuInfo | MenuTreeOption)[]
 }
 const menuTreeOptions = computed(() => {
   // 递归过滤掉按钮类型的节点，按钮不能作为上级菜单
@@ -86,8 +83,8 @@ const menuTreeOptions = computed(() => {
   const filtered = filterBtnNodes(tableData.value)
   // 添加根节点选项
   return [
-    { id: 0, name: '根目录', menu_type: 'Root' as const, children: filtered },
-  ] as MenuTreeOption[]
+    { id: 0, name: '根目录', menu_type: 'Root', children: filtered } as MenuTreeNode,
+  ]
 })
 
 // 根据选中的上级菜单，返回当前菜单可选的类型
