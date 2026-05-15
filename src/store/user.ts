@@ -41,12 +41,7 @@ export const useUserStore = defineStore('user', () => {
       role_list: res.data.role_list,
     }
     permissions.value = res.data.permission_list?.map(p => p.perms) || []
-    menuList.value = res.data.menu_list?.map(m => ({
-      ...m,
-      created_at: '',
-      updated_at: '',
-      children: [],
-    })) || []
+    menuList.value = res.data.menu_list || []
   }
 
   // 登出

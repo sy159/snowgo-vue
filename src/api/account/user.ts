@@ -1,3 +1,4 @@
+import type { MenuInfo } from '@/api/account/menu'
 import { http } from '@/utils/request'
 
 // 用户信息
@@ -95,16 +96,7 @@ export interface UserPermissionInfo {
   created_by?: number
   updated_by?: number
   role_list?: UserRole[]
-  menu_list?: Array<{
-    id: number
-    parent_id: number
-    menu_type: 'Dir' | 'Menu' | 'Btn'
-    name: string
-    path?: string
-    icon?: string
-    perms?: string
-    sort_order: number
-  }>
+  menu_list?: MenuInfo[]
   permission_list?: Array<{
     id: number
     name: string
