@@ -46,11 +46,13 @@ let dynamicRoutesRegistered = false
 let registeredRouteNames: string[] = []
 
 async function registerRoutes() {
-  if (dynamicRoutesRegistered) return
+  if (dynamicRoutesRegistered)
+    return
 
   const { useUserStore } = await import('@/store')
   const userStore = useUserStore()
-  if (!userStore.menuList.length) return
+  if (!userStore.menuList.length)
+    return
 
   const { buildRoutes } = await import('@/router/routeMap')
   const pageRoutes = buildRoutes(userStore.menuList)

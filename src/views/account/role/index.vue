@@ -94,7 +94,8 @@ const checkedMenuIds = ref<number[]>([])
 function getLeafIds(nodes: MenuInfo[]): number[] {
   const ids: number[] = []
   for (const n of nodes) {
-    if (!n.children?.length) ids.push(n.id)
+    if (!n.children?.length)
+      ids.push(n.id)
     else ids.push(...getLeafIds(n.children))
   }
   return ids
@@ -116,7 +117,8 @@ async function loadMenuTree(showAll: boolean) {
       function collectIds(nodes: MenuInfo[]) {
         for (const n of nodes) {
           userMenuIds.add(n.id)
-          if (n.children?.length) collectIds(n.children)
+          if (n.children?.length)
+            collectIds(n.children)
         }
       }
       collectIds(userStore.menuList)

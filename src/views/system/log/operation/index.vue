@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { ItemInfo } from '@/api/system/dict'
 import type { OperationLogCondition, OperationLogInfo } from '@/api/system/log'
 import { Refresh, Search } from '@element-plus/icons-vue'
 import { onMounted, reactive, ref } from 'vue'
-import { getItemListByDictCode, type ItemInfo } from '@/api/system/dict'
+import { getItemListByDictCode } from '@/api/system/dict'
 import {
   getOperationLogList,
 

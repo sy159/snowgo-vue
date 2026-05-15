@@ -1,5 +1,5 @@
-import type { ApiResponse } from '@/types'
 import type { AxiosInstance, AxiosRequestConfig } from 'axios'
+import type { ApiResponse } from '@/types'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
 import { getRefreshToken, getToken, removeToken, setToken } from '@/utils/storage'

@@ -14,6 +14,33 @@ import { useUserStore } from '@/store'
 
 const userStore = useUserStore()
 
+// ---- 表单数据与规则（需在 computed 和函数定义之前声明） ----
+const form = reactive<MenuParam>({
+  parent_id: 0,
+  menu_type: 'Dir',
+  name: '',
+  path: '',
+  icon: '',
+  perms: '',
+  sort_order: 0,
+})
+
+// 动态表单校验规则
+function buildFormRules(): FormRules {
+  const rules: FormRules = {
+    name: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
+  }
+  if (form.menu_type !== 'Btn') {
+    rules.path = [{ required: true, message: '请输入路由地址', trigger: 'blur' }]
+  }
+  if (form.menu_type === 'Btn') {
+    rules.perms = [{ required: true, message: '请输入权限标识', trigger: 'blur' }]
+  }
+  return rules
+}
+
+const formRules = ref<FormRules>(buildFormRules())
+
 // 菜单类型标签
 function typeLabel(type: string): string {
   const map: Record<string, string> = { Dir: '目录', Menu: '菜单', Btn: '按钮' }
@@ -62,22 +89,28 @@ const menuTreeOptions = computed(() => {
 
 // 根据选中的上级菜单，返回当前菜单可选的类型
 const availableMenuTypes = computed((): ('Dir' | 'Menu' | 'Btn')[] => {
-  if (form.parent_id === 0) return ['Dir', 'Menu']
+  if (form.parent_id === 0)
+    return ['Dir', 'Menu']
   // 找到选中的父节点类型
   function findNode(nodes: MenuInfo[], id: number): MenuInfo | null {
     for (const n of nodes) {
-      if (n.id === id) return n
+      if (n.id === id)
+        return n
       if (n.children) {
         const found = findNode(n.children, id)
-        if (found) return found
+        if (found)
+          return found
       }
     }
     return null
   }
   const parent = findNode(tableData.value, form.parent_id)
-  if (!parent) return ['Dir', 'Menu']
-  if (parent.menu_type === 'Dir') return ['Dir', 'Menu']
-  if (parent.menu_type === 'Menu') return ['Btn']
+  if (!parent)
+    return ['Dir', 'Menu']
+  if (parent.menu_type === 'Dir')
+    return ['Dir', 'Menu']
+  if (parent.menu_type === 'Menu')
+    return ['Btn']
   return ['Dir', 'Menu']
 })
 
@@ -94,31 +127,6 @@ const dialogVisible = ref(false)
 const isEdit = ref(false)
 const submitting = ref(false)
 const formRef = ref<FormInstance>()
-const form = reactive<MenuParam>({
-  parent_id: 0,
-  menu_type: 'Dir',
-  name: '',
-  path: '',
-  icon: '',
-  perms: '',
-  sort_order: 0,
-})
-
-// 动态表单校验规则
-function buildFormRules(): FormRules {
-  const rules: FormRules = {
-    name: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
-  }
-  if (form.menu_type !== 'Btn') {
-    rules.path = [{ required: true, message: '请输入路由地址', trigger: 'blur' }]
-  }
-  if (form.menu_type === 'Btn') {
-    rules.perms = [{ required: true, message: '请输入权限标识', trigger: 'blur' }]
-  }
-  return rules
-}
-
-const formRules = ref<FormRules>(buildFormRules())
 
 function handleAdd(parentRow?: MenuInfo) {
   isEdit.value = false

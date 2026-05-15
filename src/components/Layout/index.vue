@@ -19,7 +19,8 @@ const activeMenu = computed(() => route.path)
 // 面包屑：根据菜单树查找父级
 const breadcrumbs = computed(() => {
   const currentTitle = route.meta?.title as string
-  if (!currentTitle) return []
+  if (!currentTitle)
+    return []
 
   // 递归查找父级
   function findParent(items: any[], targetTitle: string, path: string[] = []): string[] | null {
@@ -29,7 +30,8 @@ const breadcrumbs = computed(() => {
       }
       if (item.children) {
         const found = findParent(item.children, targetTitle, [...path, item.name])
-        if (found) return found
+        if (found)
+          return found
       }
     }
     return null
@@ -134,7 +136,9 @@ onUnmounted(() => {
           <!-- 首页（管理台固定入口，不参与权限管理） -->
           <el-menu-item index="/dashboard">
             <el-icon><House /></el-icon>
-            <template #title>首页</template>
+            <template #title>
+              首页
+            </template>
           </el-menu-item>
           <!-- 动态菜单 -->
           <SidebarItem :menus="permissionStore.menuTree" />

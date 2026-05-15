@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import type { SystemInfo } from '@/api/system/info'
 import { Cpu, List, Monitor, Refresh, Setting } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useUserStore } from '@/store'
-import type { SystemInfo } from '@/api/system/info'
 import { getSystemInfo } from '@/api/system/info'
+import { useUserStore } from '@/store'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -20,22 +20,28 @@ const currentDate = computed(() => {
 })
 
 const diskPercent = computed(() => {
-  if (!systemInfo.value) return 0
+  if (!systemInfo.value)
+    return 0
   const { disk_used_gb, disk_total_gb } = systemInfo.value.os_info
-  if (!disk_total_gb) return 0
+  if (!disk_total_gb)
+    return 0
   return Math.round((disk_used_gb / disk_total_gb) * 100)
 })
 
 const diskStatusColor = computed(() => {
-  if (diskPercent.value >= 90) return 'var(--color-danger-500)'
-  if (diskPercent.value >= 70) return 'var(--color-warning-500)'
+  if (diskPercent.value >= 90)
+    return 'var(--color-danger-500)'
+  if (diskPercent.value >= 70)
+    return 'var(--color-warning-500)'
   return 'var(--color-success-500)'
 })
 
 const envTagType = computed(() => {
   const env = systemInfo.value?.service_info.env || ''
-  if (env === 'prod') return 'danger'
-  if (env === 'uat') return 'warning'
+  if (env === 'prod')
+    return 'danger'
+  if (env === 'uat')
+    return 'warning'
   return 'success'
 })
 
@@ -89,7 +95,7 @@ onUnmounted(() => {
               {{ currentDate }}，祝您工作愉快
             </p>
           </div>
-          <el-button :icon="Refresh" circle @click="fetchSystemInfo" :loading="loading" />
+          <el-button :icon="Refresh" circle :loading="loading" @click="fetchSystemInfo" />
         </div>
       </template>
       <div v-if="systemInfo" class="quick-stats-row">
@@ -124,7 +130,9 @@ onUnmounted(() => {
         <el-card shadow="hover" class="section-card card-accent-orange">
           <template #header>
             <div class="card-header">
-              <el-icon :size="18"><Setting /></el-icon>
+              <el-icon :size="18">
+                <Setting />
+              </el-icon>
               <span>服务器信息</span>
             </div>
           </template>
@@ -151,7 +159,9 @@ onUnmounted(() => {
         <el-card shadow="hover" class="section-card card-accent-green">
           <template #header>
             <div class="card-header">
-              <el-icon :size="18"><Monitor /></el-icon>
+              <el-icon :size="18">
+                <Monitor />
+              </el-icon>
               <span>磁盘使用</span>
             </div>
           </template>
@@ -187,7 +197,9 @@ onUnmounted(() => {
     <el-card v-if="systemInfo" shadow="hover" class="section-card card-accent-purple">
       <template #header>
         <div class="card-header">
-          <el-icon :size="18"><Cpu /></el-icon>
+          <el-icon :size="18">
+            <Cpu />
+          </el-icon>
           <span>Go Runtime</span>
         </div>
       </template>
@@ -229,7 +241,9 @@ onUnmounted(() => {
     <el-card shadow="hover" class="section-card">
       <template #header>
         <div class="card-header">
-          <el-icon :size="18"><List /></el-icon>
+          <el-icon :size="18">
+            <List />
+          </el-icon>
           <span>快捷入口</span>
         </div>
       </template>

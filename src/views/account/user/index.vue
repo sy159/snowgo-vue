@@ -4,6 +4,7 @@ import type { UserInfo, UserParam } from '@/api/account/user'
 import { Plus, Refresh, Search } from '@element-plus/icons-vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { onMounted, reactive, ref } from 'vue'
+import { getRoleList } from '@/api/account/role'
 import {
   createUser,
   deleteUserById,
@@ -13,13 +14,12 @@ import {
   updateUser,
 
 } from '@/api/account/user'
-import { getRoleList } from '@/api/account/role'
 import { useUserStore } from '@/store'
 
 const userStore = useUserStore()
 
 // 角色列表
-const roleOptions = ref<Array<{ id: number; name: string; code: string }>>([])
+const roleOptions = ref<Array<{ id: number, name: string, code: string }>>([])
 
 async function loadRoleOptions() {
   try {
@@ -151,7 +151,7 @@ function validateEmail(_rule: unknown, value: string, callback: (err?: Error) =>
     callback()
     return
   }
-  const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  const emailReg = /^[\w.%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i
   if (!emailReg.test(value)) {
     callback(new Error('邮箱格式不正确'))
     return
