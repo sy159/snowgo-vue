@@ -1,0 +1,21 @@
+services:
+  frontend:
+    build: .
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  # Optional: uncomment to run backend alongside for local development
+  # backend:
+  #   image: snowgo-backend:latest
+  #   ports:
+  #     - "8000:8000"
+  #   networks:
+  #     - app-network
+
+networks:
+  app-network:
+    driver: bridge

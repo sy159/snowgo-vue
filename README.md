@@ -57,8 +57,10 @@
 
 ### 环境要求
 
-- Node.js >= 18
+- Node.js >= 20
 - npm >= 9
+- （可选）Docker >= 20 / Docker Compose V2
+- （可选）GNU Make
 
 ### 安装依赖
 
@@ -70,6 +72,8 @@ npm install
 
 ```shell
 npm run dev
+# 或者使用 Make
+make dev
 ```
 
 访问 http://localhost:5173
@@ -95,6 +99,70 @@ npm run lint        # ESLint 检查
 npm run lint:fix    # 自动修复
 npm run format      # Prettier 格式化
 ```
+
+## Docker 部署
+
+### 构建镜像
+
+```shell
+docker build -t snowgo-vue .
+# 或者
+make docker-build
+```
+
+### 启动容器
+
+```shell
+docker compose up -d
+# 或者
+make docker-up
+```
+
+容器启动后，前端通过 80 端口提供服务，`/api` 请求会自动代理到后端服务（需确保同一 Docker 网络内有名为 `backend` 的后端容器）。
+
+### 停止容器
+
+```shell
+docker compose down
+# 或者
+make docker-down
+```
+
+### 多阶段构建说明
+
+Dockerfile 采用多阶段构建：
+1. **build-stage**：使用 Node.js 安装依赖并执行 `vite build`
+2. **production-stage**：使用 Nginx 托管构建产物，配置了 Gzip 压缩、静态资源缓存、SPA 路由 fallback 和安全头
+
+## 部署架构
+
+```
+┌─────────────────────────────────┐
+│         Nginx (:80)             │
+│  ┌───────────────────────────┐  │
+│  │  /          → dist/       │  │
+│  │  /api/:8000 → backend     │  │
+│  │  static     → cache 30d   │  │
+│  └───────────────────────────┘  │
+└─────────────────────────────────┘
+```
+
+生产环境部署要点：
+- Nginx 提供静态资源，配置 30 天缓存
+- `/api` 请求反向代理到后端 Go 服务
+- Gzip 压缩所有文本响应
+- 添加安全头（X-Frame-Options, X-Content-Type-Options 等）
+
+## CI/CD
+
+项目配置了 GitHub Actions 工作流（`.github/workflows/ci.yml`），在推送到 `main` 分支或提交 PR 时自动执行：
+
+1. **Install** — 安装依赖（`npm ci`）
+2. **Lint** — ESLint 代码检查
+3. **Type Check** — Vue 类型检查（`vue-tsc`）
+4. **Build** — 生产构建（`vite build`）
+
+如果任何步骤失败，CI 会标记为失败，阻止合并。
 
 ## 项目结构
 
@@ -149,6 +217,15 @@ snowgo-vue/
 │       └── error/                    # 错误页面
 │           └── 404.vue
 ├── docs/images/                      # 文档截图
+├── deploy/                           # 部署配置
+│   └── nginx.conf                    # Nginx 生产配置
+├── .github/workflows/                # CI/CD
+│   └── ci.yml                        # GitHub Actions 工作流
+├── Dockerfile                        # 多阶段构建（Node build → Nginx serve）
+├── docker-compose.yml                # 一键容器启动
+├── Makefile                          # 常用命令快捷入口
+├── .dockerignore                     # Docker 构建排除文件
+├── .env.example                      # 环境变量模板
 ├── .env.development                  # 开发环境配置
 ├── .env.production                   # 生产环境配置
 ├── vite.config.ts
