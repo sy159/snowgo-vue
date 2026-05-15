@@ -111,7 +111,7 @@ const form = reactive<UserParam>({
   role_ids: [],
 })
 
-// 密码校验：6-32位，至少包含字母、数字、符号中的2种
+// 密码校验：6-32位，至少包含字母、数字、特殊字符中的2种
 function validatePasswordMixed(_rule: unknown, value: string, callback: (err?: Error) => void) {
   if (!value) {
     callback(new Error('请输入密码'))
@@ -123,10 +123,37 @@ function validatePasswordMixed(_rule: unknown, value: string, callback: (err?: E
   }
   const hasLetter = /[a-z]/i.test(value)
   const hasDigit = /\d/.test(value)
-  const hasSymbol = /[^a-z0-9]/i.test(value)
-  const count = [hasLetter, hasDigit, hasSymbol].filter(Boolean).length
+  const hasSpecial = /[^a-z0-9]/i.test(value)
+  const count = [hasLetter, hasDigit, hasSpecial].filter(Boolean).length
   if (count < 2) {
-    callback(new Error('密码需至少包含字母、数字、符号中的 2 种'))
+    callback(new Error('密码须同时包含以下任意两类：字母、数字或特殊字符'))
+    return
+  }
+  callback()
+}
+
+// 手机号校验：11位，以1开头，第二位为3-9
+function validatePhone(_rule: unknown, value: string, callback: (err?: Error) => void) {
+  if (!value) {
+    callback(new Error('请输入手机号'))
+    return
+  }
+  if (!/^1[3-9]\d{9}$/.test(value)) {
+    callback(new Error('手机号格式不正确'))
+    return
+  }
+  callback()
+}
+
+// 邮箱校验：非必填，但填写时必须符合格式
+function validateEmail(_rule: unknown, value: string, callback: (err?: Error) => void) {
+  if (!value) {
+    callback()
+    return
+  }
+  const emailReg = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+  if (!emailReg.test(value)) {
+    callback(new Error('邮箱格式不正确'))
     return
   }
   callback()
@@ -135,10 +162,8 @@ function validatePasswordMixed(_rule: unknown, value: string, callback: (err?: E
 const formRules: FormRules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
   password: [{ required: true, validator: validatePasswordMixed, trigger: 'blur' }],
-  tel: [{ required: true, message: '请输入手机号', trigger: 'blur' }],
-  email: [
-    { type: 'email', message: '邮箱格式不正确', trigger: 'blur' },
-  ],
+  tel: [{ required: true, validator: validatePhone, trigger: 'blur' }],
+  email: [{ validator: validateEmail, trigger: 'blur' }],
   status: [{ required: true, message: '请选择状态', trigger: 'change' }],
 }
 
