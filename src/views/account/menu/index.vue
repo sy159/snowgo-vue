@@ -67,23 +67,26 @@ async function fetchData() {
 }
 
 // 菜单树选项（用于 el-tree-select，包含根节点）
-interface MenuTreeNode extends MenuInfo {
-  menu_type: 'Dir' | 'Menu' | 'Btn' | 'Root'
+interface MenuTreeSelectNode {
+  id: number
+  name: string
+  children: MenuTreeSelectNode[]
 }
-const menuTreeOptions = computed(() => {
+const menuTreeOptions = computed((): MenuTreeSelectNode[] => {
   // 递归过滤掉按钮类型的节点，按钮不能作为上级菜单
-  function filterBtnNodes(nodes: MenuInfo[]): MenuInfo[] {
+  function filterBtnNodes(nodes: MenuInfo[]): MenuTreeSelectNode[] {
     return nodes
       .filter(n => n.menu_type !== 'Btn')
       .map(n => ({
-        ...n,
+        id: n.id,
+        name: n.name,
         children: n.children ? filterBtnNodes(n.children) : [],
       }))
   }
   const filtered = filterBtnNodes(tableData.value)
   // 添加根节点选项
   return [
-    { id: 0, name: '根目录', menu_type: 'Root', children: filtered } as MenuTreeNode,
+    { id: 0, name: '根目录', children: filtered },
   ]
 })
 

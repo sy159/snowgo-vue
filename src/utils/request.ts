@@ -83,9 +83,9 @@ class Request {
       },
     )
 
-    // 响应拦截器
+    // 响应拦截器：返回 ApiResponse 而非 AxiosResponse，类型在下方通过 as unknown 转换
     this.instance.interceptors.response.use(
-      (response) => {
+      (response: any): any => {
         const apiRes = response.data as ApiResponse
 
         // code === 0 表示成功
@@ -109,12 +109,12 @@ class Request {
               .then((newToken) => {
                 onRefreshed(newToken)
                 retry.headers.Authorization = `Bearer ${newToken}`
-                return this.instance.request(retry) as unknown as ApiResponse
+                return this.instance.request(retry)
               })
               .catch((err) => {
                 onRefreshFailed(err)
                 this.handleTokenExpired()
-                return Promise.reject(err)
+                throw err
               })
               .finally(() => {
                 isRefreshing = false
@@ -130,7 +130,7 @@ class Request {
                 },
                 reject,
               })
-            }) as unknown as ApiResponse
+            })
           }
         }
 
