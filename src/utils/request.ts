@@ -1,4 +1,4 @@
-import type { AxiosInstance, AxiosRequestConfig } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios'
 import type { ApiResponse } from '@/types'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
@@ -90,7 +90,7 @@ class Request {
 
         // code === 0 表示成功
         if (apiRes.code === 0) {
-          return apiRes
+          return response
         }
 
         // 401 业务码：token 过期/无效
@@ -98,7 +98,7 @@ class Request {
           // 刷新 token 的接口本身 401，不重试
           if (response.config?.url?.includes('/auth/refresh-token')) {
             this.handleTokenExpired()
-            return Promise.reject(new Error('登录已过期'))
+            throw new Error('登录已过期')
           }
 
           // 尝试刷新 token
@@ -109,19 +109,19 @@ class Request {
               .then((newToken) => {
                 onRefreshed(newToken)
                 retry.headers.Authorization = `Bearer ${newToken}`
-                return this.instance.request(retry) as unknown as ApiResponse
+                return this.instance.request(retry)
               })
               .catch((err) => {
                 onRefreshFailed(err)
                 this.handleTokenExpired()
-                return Promise.reject(err)
+                throw err
               })
               .finally(() => {
                 isRefreshing = false
               })
           }
           else {
-            return new Promise((resolve, reject) => {
+            return new Promise<AxiosResponse>((resolve, reject) => {
               refreshQueue.push({
                 resolve: (token: string) => {
                   const retry = response.config
@@ -130,7 +130,7 @@ class Request {
                 },
                 reject,
               })
-            }) as unknown as ApiResponse
+            })
           }
         }
 

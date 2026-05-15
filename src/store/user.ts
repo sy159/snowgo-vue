@@ -32,16 +32,21 @@ export const useUserStore = defineStore('user', () => {
       tel: res.data.tel,
       nickname: res.data.nickname,
       status: res.data.status,
-      email: res.data.email,
-      remark: res.data.remark,
-      created_by: res.data.created_by,
-      updated_by: res.data.updated_by,
+      email: res.data.email ?? '',
+      remark: res.data.remark ?? '',
+      created_by: res.data.created_by ?? 0,
+      updated_by: res.data.updated_by ?? 0,
       created_at: res.data.created_at,
       updated_at: res.data.updated_at,
       role_list: res.data.role_list,
     }
     permissions.value = res.data.permission_list?.map(p => p.perms) || []
-    menuList.value = res.data.menu_list || []
+    menuList.value = res.data.menu_list?.map(m => ({
+      ...m,
+      created_at: '',
+      updated_at: '',
+      children: [],
+    })) || []
   }
 
   // 登出
