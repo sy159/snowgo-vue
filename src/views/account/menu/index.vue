@@ -141,7 +141,6 @@ function handleAdd(parentRow?: MenuInfo) {
     form.parent_id = 0
     form.menu_type = 'Dir'
   }
-  formRules.value = buildFormRules()
   dialogVisible.value = true
 }
 
@@ -157,7 +156,6 @@ function handleEdit(row: MenuInfo) {
     perms: row.perms || '',
     sort_order: row.sort_order,
   })
-  formRules.value = buildFormRules()
   dialogVisible.value = true
 }
 
