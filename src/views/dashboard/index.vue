@@ -61,45 +61,57 @@ const currentTime = computed(() =>
 
 const greeting = computed(() => {
   const h = now.value.getHours()
-  if (h < 6) return '夜深了'
-  if (h < 9) return '早上好'
-  if (h < 12) return '上午好'
-  if (h < 14) return '中午好'
-  if (h < 18) return '下午好'
+  if (h < 6)
+    return '夜深了'
+  if (h < 9)
+    return '早上好'
+  if (h < 12)
+    return '上午好'
+  if (h < 14)
+    return '中午好'
+  if (h < 18)
+    return '下午好'
   return '晚上好'
 })
 
 const envTagType = computed(() => {
   const env = systemInfo.value?.service_info.env || ''
-  if (env === 'prod') return 'danger'
-  if (env === 'uat') return 'warning'
+  if (env === 'prod')
+    return 'danger'
+  if (env === 'uat')
+    return 'warning'
   return 'success'
 })
 
 const diskPercent = computed(() => {
-  if (!systemInfo.value) return 0
+  if (!systemInfo.value)
+    return 0
   const { disk_used_gb, disk_total_gb } = systemInfo.value.os_info
   return disk_total_gb ? Math.round((disk_used_gb / disk_total_gb) * 100) : 0
 })
 
 const diskColor = computed(() => {
-  if (diskPercent.value >= 90) return '#ef4444'
-  if (diskPercent.value >= 70) return '#f59e0b'
+  if (diskPercent.value >= 90)
+    return '#ef4444'
+  if (diskPercent.value >= 70)
+    return '#f59e0b'
   return '#6366f1'
 })
 
 const memPercent = computed(() => {
-  if (!systemInfo.value) return 0
+  if (!systemInfo.value)
+    return 0
   const { mem_alloc_mb, mem_sys_mb } = systemInfo.value.go_runtime
   return mem_sys_mb ? Math.round((mem_alloc_mb / mem_sys_mb) * 100) : 0
 })
 
 const memColor = computed(() => {
-  if (memPercent.value >= 90) return '#ef4444'
-  if (memPercent.value >= 70) return '#f59e0b'
+  if (memPercent.value >= 90)
+    return '#ef4444'
+  if (memPercent.value >= 70)
+    return '#f59e0b'
   return '#10b981'
 })
-
 
 async function fetchSystemInfo() {
   loading.value = true
@@ -119,12 +131,16 @@ async function fetchSystemInfo() {
 onMounted(() => {
   fetchSystemInfo()
   sysTimer = setInterval(fetchSystemInfo, 30000)
-  clockTimer = setInterval(() => { now.value = new Date() }, 1000)
+  clockTimer = setInterval(() => {
+    now.value = new Date()
+  }, 1000)
 })
 
 onUnmounted(() => {
-  if (sysTimer) clearInterval(sysTimer)
-  if (clockTimer) clearInterval(clockTimer)
+  if (sysTimer)
+    clearInterval(sysTimer)
+  if (clockTimer)
+    clearInterval(clockTimer)
 })
 </script>
 
@@ -160,7 +176,9 @@ onUnmounted(() => {
         <el-card shadow="never" class="dash-card card-accent-blue">
           <template #header>
             <div class="card-header">
-              <el-icon :size="18"><Platform /></el-icon>
+              <el-icon :size="18">
+                <Platform />
+              </el-icon>
               <span>服务信息</span>
               <span v-if="systemInfo" class="status-dot" />
               <el-tag v-if="systemInfo" :type="envTagType" size="small" effect="plain" round class="ml-auto">
@@ -199,7 +217,9 @@ onUnmounted(() => {
         <el-card v-if="systemInfo" shadow="never" class="dash-card card-accent-purple">
           <template #header>
             <div class="card-header">
-              <el-icon :size="18"><Cpu /></el-icon>
+              <el-icon :size="18">
+                <Cpu />
+              </el-icon>
               <span>资源占用</span>
               <span class="card-badge">Go {{ systemInfo.go_runtime.go_version }}</span>
             </div>
@@ -207,7 +227,11 @@ onUnmounted(() => {
           <div class="res-list">
             <!-- CPU -->
             <div class="res-row">
-              <div class="res-badge cpu"><el-icon :size="18"><Cpu /></el-icon></div>
+              <div class="res-badge cpu">
+                <el-icon :size="18">
+                  <Cpu />
+                </el-icon>
+              </div>
               <div class="res-body">
                 <span class="res-label">CPU</span>
                 <span class="res-desc">{{ systemInfo.go_runtime.num_cpu }} 核心 · Goroutines {{ systemInfo.go_runtime.goroutines }}</span>
@@ -216,28 +240,36 @@ onUnmounted(() => {
             </div>
             <!-- 内存 -->
             <div class="res-row">
-              <div class="res-badge mem"><el-icon :size="18"><Timer /></el-icon></div>
+              <div class="res-badge mem">
+                <el-icon :size="18">
+                  <Timer />
+                </el-icon>
+              </div>
               <div class="res-body">
                 <div class="res-head">
                   <span class="res-label">内存</span>
                   <span class="res-pct" :style="{ color: memColor }">{{ memPercent }}%</span>
                 </div>
                 <div class="res-bar">
-                  <div class="res-bar-fill" :style="{ width: memPercent + '%', background: memColor }" />
+                  <div class="res-bar-fill" :style="`width: ${memPercent}%; background: ${memColor}`" />
                 </div>
               </div>
               <span class="res-value">{{ systemInfo.go_runtime.mem_alloc_mb }}<small> MB</small></span>
             </div>
             <!-- 磁盘 -->
             <div class="res-row">
-              <div class="res-badge disk"><el-icon :size="18"><Files /></el-icon></div>
+              <div class="res-badge disk">
+                <el-icon :size="18">
+                  <Files />
+                </el-icon>
+              </div>
               <div class="res-body">
                 <div class="res-head">
                   <span class="res-label">磁盘</span>
                   <span class="res-pct" :style="{ color: diskColor }">{{ diskPercent }}%</span>
                 </div>
                 <div class="res-bar">
-                  <div class="res-bar-fill" :style="{ width: diskPercent + '%', background: diskColor }" />
+                  <div class="res-bar-fill" :style="`width: ${diskPercent}%; background: ${diskColor}`" />
                 </div>
               </div>
               <span class="res-value">{{ systemInfo.os_info.disk_used_gb }}<small> GB</small></span>
@@ -251,7 +283,9 @@ onUnmounted(() => {
     <el-card v-if="systemInfo" shadow="never" class="dash-card card-accent-orange section-card">
       <template #header>
         <div class="card-header">
-          <el-icon :size="18"><Platform /></el-icon>
+          <el-icon :size="18">
+            <Platform />
+          </el-icon>
           <span>Go Runtime</span>
         </div>
       </template>
