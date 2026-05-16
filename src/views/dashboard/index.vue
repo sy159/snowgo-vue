@@ -376,5 +376,4 @@ onUnmounted(() => {
   font-weight: 600;
   color: var(--text-primary);
 }
-
 </style>
