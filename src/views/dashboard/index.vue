@@ -1,12 +1,10 @@
 <script setup lang="ts">
 import type { SystemInfo } from '@/api/system/info'
-import { Cpu, List, Monitor, Refresh, Setting } from '@element-plus/icons-vue'
+import { Cpu, Monitor, Refresh, Setting } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { getSystemInfo } from '@/api/system/info'
 import { useUserStore } from '@/store'
 
-const router = useRouter()
 const userStore = useUserStore()
 
 const systemInfo = ref<SystemInfo | null>(null)
@@ -58,17 +56,6 @@ async function fetchSystemInfo() {
     loading.value = false
   }
 }
-
-function handleNavigate(path: string) {
-  router.push(path)
-}
-
-const quickLinks = [
-  { label: '用户管理', path: '/account/user', icon: Monitor },
-  { label: '操作日志', path: '/system/log/operation', icon: Setting },
-  { label: '字典管理', path: '/system/dict', icon: List },
-  { label: '角色管理', path: '/account/role', icon: Setting },
-]
 
 onMounted(() => {
   fetchSystemInfo()
@@ -236,28 +223,6 @@ onUnmounted(() => {
         </div>
       </div>
     </el-card>
-
-    <!-- 快捷入口 -->
-    <el-card shadow="hover" class="section-card">
-      <template #header>
-        <div class="card-header">
-          <el-icon :size="18">
-            <List />
-          </el-icon>
-          <span>快捷入口</span>
-        </div>
-      </template>
-      <el-row :gutter="16">
-        <el-col v-for="link in quickLinks" :key="link.label" :xs="12" :sm="8" :md="6">
-          <div class="quick-link" @click="handleNavigate(link.path)">
-            <el-icon :size="24">
-              <component :is="link.icon" />
-            </el-icon>
-            <span class="quick-link-label">{{ link.label }}</span>
-          </div>
-        </el-col>
-      </el-row>
-    </el-card>
   </div>
 </template>
 
@@ -412,30 +377,4 @@ onUnmounted(() => {
   color: var(--text-primary);
 }
 
-/* ===== Quick Links ===== */
-.quick-link {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: var(--space-5) var(--space-3);
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition-base);
-  background-color: var(--color-gray-100);
-  margin-bottom: var(--space-3);
-  color: var(--text-secondary);
-
-  &:hover {
-    background-color: var(--color-primary-50);
-    color: var(--color-primary-500);
-    transform: translateY(-2px);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-  }
-}
-
-.quick-link-label {
-  margin-top: var(--space-2);
-  font-size: var(--text-sm);
-}
 </style>

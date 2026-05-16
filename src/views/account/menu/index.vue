@@ -30,7 +30,7 @@ function buildFormRules(): FormRules {
   const rules: FormRules = {
     name: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
   }
-  if (form.menu_type !== 'Btn') {
+  if (form.menu_type === 'Menu') {
     rules.path = [{ required: true, message: '请输入路由地址', trigger: 'blur' }]
   }
   if (form.menu_type === 'Btn') {
@@ -39,7 +39,7 @@ function buildFormRules(): FormRules {
   return rules
 }
 
-const formRules = ref<FormRules>(buildFormRules())
+const formRules = computed<FormRules>(() => buildFormRules())
 
 // 菜单类型标签
 function typeLabel(type: string): string {
@@ -121,7 +121,6 @@ const availableMenuTypes = computed((): ('Dir' | 'Menu' | 'Btn')[] => {
 function onParentChange(): void {
   if (!availableMenuTypes.value.includes(form.menu_type as 'Dir' | 'Menu' | 'Btn')) {
     form.menu_type = availableMenuTypes.value[0]
-    formRules.value = buildFormRules()
   }
 }
 
@@ -165,8 +164,7 @@ function handleEdit(row: MenuInfo) {
 async function handleSubmit() {
   if (!formRef.value)
     return
-  // 切换类型后重新校验
-  formRules.value = buildFormRules()
+  // 切换类型后规则会通过 computed 自动更新，直接校验
   await formRef.value.validate(async (valid) => {
     if (!valid)
       return
@@ -179,7 +177,7 @@ async function handleSubmit() {
         name: form.name,
         sort_order: form.sort_order || 0,
       }
-      if (form.menu_type !== 'Btn') {
+      if (form.menu_type === 'Menu') {
         payload.path = form.path || undefined
         payload.icon = form.icon || undefined
       }
@@ -250,6 +248,9 @@ onMounted(() => {
       <template #header>
         <div class="card-header">
           <span>菜单列表</span>
+          <el-button v-permission="'account:menu:create'" type="primary" size="default" @click="handleAdd()">
+            新增菜单
+          </el-button>
         </div>
       </template>
 
@@ -343,7 +344,7 @@ onMounted(() => {
         <el-form-item label="菜单名称" prop="name">
           <el-input v-model="form.name" placeholder="请输入菜单名称" />
         </el-form-item>
-        <el-form-item v-if="form.menu_type !== 'Btn'" label="路由地址" prop="path">
+        <el-form-item v-if="form.menu_type === 'Menu'" label="路由地址" prop="path">
           <el-input v-model="form.path" placeholder="请输入路由地址" />
         </el-form-item>
         <el-form-item v-if="form.menu_type !== 'Btn'" label="图标" prop="icon">
@@ -373,6 +374,12 @@ onMounted(() => {
   padding: var(--space-6);
   background: var(--bg-page);
   min-height: 100%;
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .text-muted {
