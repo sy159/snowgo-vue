@@ -14,7 +14,7 @@ import {
   updateDict,
   updateDictItem,
 } from '@/api/system/dict'
-import { useUserStore } from '@/store'
+import { useUserStore } from '@/store/user'
 
 const userStore = useUserStore()
 

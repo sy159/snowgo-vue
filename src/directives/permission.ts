@@ -1,5 +1,5 @@
 import type { Directive, DirectiveBinding } from 'vue'
-import { useUserStore } from '@/store'
+import { useUserStore } from '@/store/user'
 
 /**
  * v-permission 指令：根据权限标识控制元素显示/隐藏

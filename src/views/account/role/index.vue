@@ -14,7 +14,7 @@ import {
 
   updateRole,
 } from '@/api/account/role'
-import { useUserStore } from '@/store'
+import { useUserStore } from '@/store/user'
 
 const userStore = useUserStore()
 

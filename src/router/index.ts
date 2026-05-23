@@ -1,5 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router'
 import { createRouter, createWebHistory } from 'vue-router'
+import { usePermissionStore } from '@/store/permission'
+import { useUserStore } from '@/store/user'
 import { getToken } from '@/utils/storage'
 
 const Layout = () => import('@/components/Layout/index.vue')
@@ -49,7 +51,6 @@ async function registerRoutes() {
   if (dynamicRoutesRegistered)
     return
 
-  const { useUserStore } = await import('@/store')
   const userStore = useUserStore()
   if (!userStore.menuList.length)
     return
@@ -89,12 +90,10 @@ router.beforeEach(async (to, _from) => {
     return '/dashboard'
 
   // 页面刷新后重新加载用户信息和动态路由
-  const { useUserStore } = await import('@/store')
   const userStore = useUserStore()
   if (!userStore.permissions.length) {
     try {
       await userStore.fetchUserInfo()
-      const { usePermissionStore } = await import('@/store')
       await usePermissionStore().fetchMenuTree()
     }
     catch {

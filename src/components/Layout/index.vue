@@ -5,7 +5,9 @@ import { Expand, Fold, House } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SidebarItem from '@/components/Sidebar/SidebarItem.vue'
-import { usePermissionStore, useTabsStore, useUserStore } from '@/store'
+import { usePermissionStore } from '@/store/permission'
+import { useTabsStore } from '@/store/tabs'
+import { useUserStore } from '@/store/user'
 
 const route = useRoute()
 const router = useRouter()

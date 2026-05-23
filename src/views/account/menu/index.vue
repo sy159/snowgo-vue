@@ -10,7 +10,7 @@ import {
 
   updateMenu,
 } from '@/api/account/menu'
-import { useUserStore } from '@/store'
+import { useUserStore } from '@/store/user'
 
 const userStore = useUserStore()
 

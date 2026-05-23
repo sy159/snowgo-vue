@@ -11,7 +11,7 @@ import {
 } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { getSystemInfo } from '@/api/system/info'
-import { useUserStore } from '@/store'
+import { useUserStore } from '@/store/user'
 
 const userStore = useUserStore()
 

@@ -14,7 +14,7 @@ import {
   updateUser,
 
 } from '@/api/account/user'
-import { useUserStore } from '@/store'
+import { useUserStore } from '@/store/user'
 
 const userStore = useUserStore()
 
