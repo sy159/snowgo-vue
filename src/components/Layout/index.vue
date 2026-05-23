@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { MenuInfo } from '@/api/account/menu'
 import type { TabItem } from '@/store/tabs'
 import { Expand, Fold, House } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -16,20 +17,19 @@ const isCollapse = ref(false)
 
 const activeMenu = computed(() => route.path)
 
-// 面包屑：根据菜单树查找父级
+// 面包屑：根据当前路径从菜单树查找父级，避免同名菜单匹配错误。
 const breadcrumbs = computed(() => {
   const currentTitle = route.meta?.title as string
   if (!currentTitle)
     return []
 
-  // 递归查找父级
-  function findParent(items: any[], targetTitle: string, path: string[] = []): string[] | null {
+  function findParent(items: MenuInfo[], targetPath: string, path: string[] = []): string[] | null {
     for (const item of items) {
-      if (item.name === targetTitle) {
+      if (item.path === targetPath) {
         return [...path, item.name]
       }
-      if (item.children) {
-        const found = findParent(item.children, targetTitle, [...path, item.name])
+      if (item.children?.length) {
+        const found = findParent(item.children, targetPath, [...path, item.name])
         if (found)
           return found
       }
@@ -37,7 +37,7 @@ const breadcrumbs = computed(() => {
     return null
   }
 
-  const result = findParent(permissionStore.menuTree, currentTitle)
+  const result = findParent(permissionStore.menuTree, route.path)
   return result || [currentTitle]
 })
 

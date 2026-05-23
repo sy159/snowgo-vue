@@ -14,8 +14,8 @@ const loading = ref(false)
 const currentYear = new Date().getFullYear()
 
 const loginForm = reactive({
-  username: 'admin',
-  password: '123456',
+  username: import.meta.env.DEV ? 'admin' : '',
+  password: import.meta.env.DEV ? '123456' : '',
 })
 
 const rules: FormRules = {

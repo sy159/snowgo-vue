@@ -208,8 +208,8 @@ async function handleSubmit() {
       // 编辑时不传空密码
       if (isEdit.value && !payload.password)
         delete payload.password
-      // 未分配角色时不传空数组
-      if (!payload.role_ids?.length)
+      // 新增用户未分配角色时不传空数组；编辑时保留空数组以支持清空角色。
+      if (!isEdit.value && !payload.role_ids?.length)
         delete payload.role_ids
       if (isEdit.value) {
         await updateUser(payload)
