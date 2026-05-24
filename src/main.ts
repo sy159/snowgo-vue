@@ -13,6 +13,7 @@ import { ElIcon } from 'element-plus/es/components/icon/index.mjs'
 import { ElInputNumber } from 'element-plus/es/components/input-number/index.mjs'
 import { ElInput } from 'element-plus/es/components/input/index.mjs'
 import { ElLink } from 'element-plus/es/components/link/index.mjs'
+import { ElLoading } from 'element-plus/es/components/loading/index.mjs'
 import { ElMenu, ElMenuItem, ElSubMenu } from 'element-plus/es/components/menu/index.mjs'
 import { ElPagination } from 'element-plus/es/components/pagination/index.mjs'
 import { ElRadio, ElRadioGroup } from 'element-plus/es/components/radio/index.mjs'
@@ -95,6 +96,7 @@ const elementComponents = [
   ElInput,
   ElInputNumber,
   ElLink,
+  ElLoading,
   ElMain,
   ElMenu,
   ElMenuItem,

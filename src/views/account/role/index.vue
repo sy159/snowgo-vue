@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormInstance } from 'element-plus'
+import type { FormInstance, FormRules } from 'element-plus'
 import type { MenuInfo } from '@/api/account/menu'
 import type { RoleInfo, RoleListCondition, RoleParam } from '@/api/account/role'
 import { Plus, Refresh, Search } from '@element-plus/icons-vue'
@@ -83,7 +83,7 @@ const form = reactive<RoleParam>({
 
 const formRef = ref<FormInstance>()
 
-const formRules: Record<string, any> = {
+const formRules: FormRules<RoleParam> = {
   name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }],
   code: [{ required: true, message: '请输入角色编码', trigger: 'blur' }],
 }
