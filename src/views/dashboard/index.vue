@@ -2,11 +2,13 @@
 import type { SystemInfo } from '@/api/system/info'
 import {
   Calendar,
-  Clock,
+  CollectionTag,
   Cpu,
+  DataBoard,
   Files,
   Platform,
   Refresh,
+  Stopwatch,
   Timer,
 } from '@element-plus/icons-vue'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
@@ -19,7 +21,6 @@ const systemInfo = ref<SystemInfo | null>(null)
 const loading = ref(false)
 const now = ref(new Date())
 let sysTimer: ReturnType<typeof setInterval> | null = null
-let clockTimer: ReturnType<typeof setInterval> | null = null
 
 const quotes = [
   '不积跬步，无以至千里；不积小流，无以成江海。',
@@ -54,10 +55,6 @@ const currentDate = computed(() => {
   const w = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'][now.value.getDay()]
   return `${now.value.getFullYear()}年${now.value.getMonth() + 1}月${now.value.getDate()}日 ${w}`
 })
-
-const currentTime = computed(() =>
-  `${String(now.value.getHours()).padStart(2, '0')}:${String(now.value.getMinutes()).padStart(2, '0')}:${String(now.value.getSeconds()).padStart(2, '0')}`,
-)
 
 const greeting = computed(() => {
   const h = now.value.getHours()
@@ -131,16 +128,11 @@ async function fetchSystemInfo() {
 onMounted(() => {
   fetchSystemInfo()
   sysTimer = setInterval(fetchSystemInfo, 30000)
-  clockTimer = setInterval(() => {
-    now.value = new Date()
-  }, 1000)
 })
 
 onUnmounted(() => {
   if (sysTimer)
     clearInterval(sysTimer)
-  if (clockTimer)
-    clearInterval(clockTimer)
 })
 </script>
 
@@ -149,7 +141,7 @@ onUnmounted(() => {
     <!-- ==================== 欢迎区 ==================== -->
     <section class="hero">
       <div class="hero-left">
-        <div class="hero-avatar">
+        <div class="hero-avatar" aria-hidden="true">
           {{ (userStore.userInfo?.nickname || userStore.userInfo?.username || '管')[0] }}
         </div>
         <div class="hero-text">
@@ -158,12 +150,33 @@ onUnmounted(() => {
           </h1>
           <div class="hero-meta">
             <span class="hero-date"><el-icon :size="14"><Calendar /></el-icon> {{ currentDate }}</span>
-            <span class="hero-sep">|</span>
-            <span class="hero-clock"><el-icon :size="14"><Clock /></el-icon> {{ currentTime }}</span>
           </div>
         </div>
       </div>
-      <div class="hero-right">
+      <div class="hero-status">
+        <div class="status-card status-env">
+          <span class="status-icon"><el-icon><DataBoard /></el-icon></span>
+          <div>
+            <span class="status-label">环境</span>
+            <strong>{{ systemInfo?.service_info.env?.toUpperCase() || '-' }}</strong>
+          </div>
+        </div>
+        <div class="status-card status-version">
+          <span class="status-icon"><el-icon><CollectionTag /></el-icon></span>
+          <div>
+            <span class="status-label">版本</span>
+            <strong>{{ systemInfo?.service_info.version || '-' }}</strong>
+          </div>
+        </div>
+        <div class="status-card status-uptime">
+          <span class="status-icon"><el-icon><Stopwatch /></el-icon></span>
+          <div>
+            <span class="status-label">运行时长</span>
+            <strong>{{ systemInfo?.service_info.uptime || '-' }}</strong>
+          </div>
+        </div>
+      </div>
+      <div class="hero-actions">
         <span class="hero-quote">{{ quote }}</span>
         <el-button class="hero-refresh" :icon="Refresh" circle :loading="loading" size="small" @click="fetchSystemInfo" />
       </div>
@@ -322,7 +335,7 @@ onUnmounted(() => {
 <style scoped lang="scss">
 /* ===== 容器 ===== */
 .dashboard {
-  padding: var(--space-6);
+  padding: var(--space-5);
   background: var(--bg-page);
   min-height: 100%;
 }
@@ -352,7 +365,7 @@ onUnmounted(() => {
 }
 
 .card-accent-blue   { border-top: 3px solid #3b82f6; }
-.card-accent-purple { border-top: 3px solid #8b5cf6; }
+.card-accent-purple { border-top: 3px solid var(--color-primary-500); }
 .card-accent-orange { border-top: 3px solid #f97316; }
 
 .card-header {
@@ -383,94 +396,57 @@ onUnmounted(() => {
 /* ===== Hero ===== */
 .hero {
   position: relative;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(260px, 0.85fr) minmax(430px, 1.35fr) minmax(180px, 0.55fr);
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-10);
-  padding: var(--space-8) var(--space-8);
+  gap: var(--space-4);
+  padding: var(--space-5);
   margin-bottom: var(--space-5);
   background: var(--bg-surface);
-  border: 1px solid transparent;
-  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-sm);
-  background-clip: padding-box;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: -2px;
-    border-radius: inherit;
-    padding: 2px;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #10b981, #3b82f6);
-    background-size: 300% 300%;
-    animation: border-rotate 4s linear infinite;
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    opacity: 0.3;
-  }
-
-  &:hover::before {
-    opacity: 0.7;
-    transition: opacity var(--transition-base);
-  }
-}
-
-@keyframes border-rotate {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 
 .hero-left {
   display: flex;
   align-items: center;
-  gap: var(--space-6);
+  gap: var(--space-4);
+  min-width: 0;
 }
 
 .hero-avatar {
   flex-shrink: 0;
-  width: 64px;
-  height: 64px;
+  width: 48px;
+  height: 48px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-xl);
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-600);
   color: #fff;
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: 700;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-  animation: avatar-glow 3s ease-in-out infinite;
-}
-
-@keyframes avatar-glow {
-  0%, 100% { box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
-  50%      { box-shadow: 0 4px 24px rgba(59, 130, 246, 0.5); }
 }
 
 .hero-greeting {
-  margin: 0 0 var(--space-2);
-  font-size: var(--text-2xl);
-  font-weight: 400;
+  margin: 0 0 var(--space-1);
+  font-size: var(--text-xl);
+  font-weight: 500;
   color: var(--text-primary);
   line-height: 1.3;
 
   strong {
     font-weight: 700;
-    background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--color-primary-700);
   }
 }
 
 .hero-meta {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  font-size: var(--text-lg);
+  gap: var(--space-2);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
@@ -482,40 +458,79 @@ onUnmounted(() => {
   font-weight: 500;
 }
 
-.hero-clock {
-  font-family: var(--font-mono);
-  color: var(--color-primary-600);
-  font-size: var(--text-lg);
-  font-weight: 600;
-  animation: clock-glow 1s ease-in-out infinite;
+.hero-status {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  min-width: 0;
 }
 
-@keyframes clock-glow {
-  0%, 30%, 100% { text-shadow: 0 0 0 rgba(59,130,246,0); }
-  50%           { text-shadow: 0 0 8px rgba(59,130,246,0.35); }
-}
-
-.hero-sep {
-  color: var(--color-gray-300);
-}
-
-.hero-right {
+.status-card {
   display: flex;
   align-items: center;
-  gap: var(--space-6);
-  padding-left: var(--space-8);
-  border-left: 1px solid var(--color-gray-200);
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.status-icon {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  color: var(--color-primary-600);
+  background: var(--color-primary-50);
+}
+
+.status-card > div {
+  min-width: 0;
+}
+
+.status-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--color-gray-600);
+}
+
+.status-card strong {
+  display: block;
+  font-size: var(--text-base);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  min-width: 0;
 }
 
 .hero-quote {
   margin: 0;
-  font-size: var(--text-base);
-  font-style: italic;
+  font-size: var(--text-sm);
   color: var(--text-secondary);
-  line-height: 1.8;
-  max-width: 300px;
+  line-height: 1.6;
+  width: 180px;
   text-align: right;
-  transition: opacity var(--transition-base), transform var(--transition-base);
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .hero-refresh {
@@ -538,7 +553,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  padding: var(--space-4) var(--space-4);
+  padding: var(--space-3);
   border-radius: var(--radius-md);
   transition: background var(--transition-fast);
 
@@ -549,15 +564,15 @@ onUnmounted(() => {
 
 .res-badge {
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-lg);
   color: #fff;
 
-  &.cpu  { background: #3b82f6; }
+  &.cpu  { background: var(--color-primary-500); }
   &.mem  { background: #10b981; }
   &.disk { background: #6366f1; }
 }
@@ -644,17 +659,17 @@ onUnmounted(() => {
 /* ===== 响应式 ===== */
 @media (max-width: 768px) {
   .hero {
-    flex-direction: column;
+    grid-template-columns: 1fr;
     align-items: flex-start;
     gap: var(--space-5);
     padding: var(--space-5);
   }
-  .hero-right {
-    border-left: none;
-    border-top: 1px solid var(--color-gray-200);
-    padding-left: 0;
-    padding-top: var(--space-4);
+  .hero-status {
+    grid-template-columns: 1fr;
     width: 100%;
+  }
+  .hero-actions {
+    justify-content: space-between;
   }
   .hero-quote {
     text-align: left;

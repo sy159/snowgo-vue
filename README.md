@@ -24,7 +24,7 @@
 ### 管理页面
 
 <p align="center">
-  <img src="docs/images/index.png" alt="User Management" width="800" />
+  <img src="docs/images/index2.png" alt="Dashboard" width="800" />
 </p>
 
 ## 特性
