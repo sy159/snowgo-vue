@@ -118,7 +118,7 @@ onMounted(() => {
 
 <template>
   <div class="operation-log-page">
-    <el-card shadow="never">
+    <el-card shadow="never" class="table-card">
       <!-- 搜索表单 -->
       <el-form :model="searchForm" inline class="search-form">
         <el-form-item label="操作人">
@@ -238,13 +238,12 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .operation-log-page {
-  padding: var(--space-6);
   background: var(--bg-page);
   min-height: 100%;
 }
 
 .expand-content {
-  padding: 16px 24px;
+  padding: var(--space-4);
   display: flex;
   gap: 24px;
 }

@@ -232,10 +232,11 @@ onUnmounted(() => {
 .sidebar {
   transition: width 0.3s;
   overflow: hidden;
+  background: var(--bg-sidebar);
 }
 
 .logo {
-  height: 48px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -247,33 +248,26 @@ onUnmounted(() => {
   justify-content: space-between;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--color-gray-200);
-  padding: 0 var(--space-6);
-  height: 64px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 0 var(--space-5);
+  height: 56px;
+  box-shadow: none;
   position: relative;
 }
 
-/* Top bar */
 .header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--color-gray-200);
+  content: none;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   flex-shrink: 0;
-  min-width: 220px;
+  min-width: 200px;
 }
 
 .collapse-btn {
-  font-size: 20px;
+  font-size: 18px;
   cursor: pointer;
   color: var(--text-secondary);
   padding: var(--space-2);
@@ -295,7 +289,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
@@ -320,26 +314,35 @@ onUnmounted(() => {
   display: flex;
   justify-content: flex-start;
   overflow: hidden;
-  padding-left: var(--space-4);
+  padding-left: var(--space-3);
 }
 
 .tabs-bar {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-1);
+  min-width: 0;
+  overflow-x: auto;
+  padding: var(--space-1) 0;
+  scrollbar-width: none;
+}
+
+.tabs-bar::-webkit-scrollbar {
+  display: none;
 }
 
 .tab-item {
   cursor: pointer;
-  border-radius: var(--radius-md) !important;
+  border-radius: var(--radius-sm) !important;
   border: 1px solid var(--color-gray-200) !important;
-  padding: 0 var(--space-3) !important;
-  height: 30px !important;
-  line-height: 30px !important;
+  padding: 0 var(--space-2) !important;
+  height: 28px !important;
+  line-height: 28px !important;
   font-size: var(--text-sm) !important;
   transition: all var(--transition-fast) !important;
-  background: var(--bg-surface) !important;
+  background: #f8fafc !important;
   color: var(--text-secondary) !important;
+  flex: 0 0 auto;
 }
 
 .tab-item:hover {
@@ -349,7 +352,7 @@ onUnmounted(() => {
 }
 
 .tab-item.el-tag--dark {
-  background: var(--color-primary-50) !important;
+  background: #e8f5fc !important;
   color: var(--color-primary-600) !important;
   border-color: var(--color-primary-300) !important;
   font-weight: 500;
@@ -363,7 +366,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  margin-left: var(--space-4);
+  margin-left: var(--space-3);
 }
 
 .user-info {
@@ -371,8 +374,8 @@ onUnmounted(() => {
   align-items: center;
   gap: var(--space-3);
   cursor: pointer;
-  padding: var(--space-1) var(--space-3);
-  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
   transition: all var(--transition-fast);
 }
 
@@ -381,10 +384,10 @@ onUnmounted(() => {
 }
 
 .user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--color-primary-400), var(--color-primary-600));
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius-md);
+  background: var(--color-primary-600);
   color: #fff;
   display: flex;
   align-items: center;
@@ -407,15 +410,41 @@ onUnmounted(() => {
 .context-menu {
   position: fixed;
   z-index: 9999;
+  min-width: 128px;
+  padding: var(--space-1);
+  background: var(--bg-surface);
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
 }
 
 .context-menu-item {
-  padding: var(--space-2) var(--space-4);
+  padding: var(--space-2) var(--space-3);
   cursor: pointer;
   font-size: var(--text-sm);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
 }
 
 .context-menu-item:hover {
   background: var(--color-gray-50);
+}
+
+@media (max-width: 960px) {
+  .header {
+    padding: 0 var(--space-3);
+  }
+
+  .header-left {
+    min-width: auto;
+  }
+
+  .breadcrumb {
+    display: none;
+  }
+
+  .user-name {
+    display: none;
+  }
 }
 </style>

@@ -67,7 +67,7 @@ onMounted(() => {
 
 <template>
   <div class="login-log-page">
-    <el-card shadow="never">
+    <el-card shadow="never" class="table-card">
       <!-- 搜索表单 -->
       <el-form :model="searchForm" inline class="search-form">
         <el-form-item label="用户名">
@@ -159,7 +159,6 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .login-log-page {
-  padding: var(--space-6);
   background: var(--bg-page);
   min-height: 100%;
 }

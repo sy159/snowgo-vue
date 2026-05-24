@@ -2,13 +2,14 @@
 .el-card {
   border-radius: var(--radius-md);
   border: 1px solid var(--color-gray-200);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: box-shadow var(--transition-base);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
   background-color: var(--bg-surface);
 }
 
 .el-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-color: var(--color-gray-300);
+  box-shadow: var(--shadow-sm);
 }
 
 /* Card left accent color variants */
@@ -19,39 +20,43 @@
 .el-card.card-accent-red { border-left: 4px solid var(--color-danger-500); }
 
 .el-card__header {
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-4);
   border-bottom: 1px solid var(--color-gray-100);
   font-weight: 600;
-  font-size: var(--text-lg);
+  font-size: var(--text-base);
   color: var(--text-primary);
   background-color: var(--bg-surface);
 }
 
 .el-card__body {
-  padding: var(--space-6);
+  padding: var(--space-4);
   background-color: var(--bg-surface);
 }
 
 /* ===== Tables ===== */
 .el-table {
   border-radius: var(--radius-md);
+  overflow: hidden;
+  font-size: var(--text-sm);
 }
 
 .el-table th.el-table__cell {
-  background-color: var(--color-gray-50);
-  color: var(--text-secondary);
+  background-color: #f8fafc;
+  color: var(--color-gray-600);
   font-weight: 600;
   font-size: var(--text-sm);
   border-bottom-color: var(--border-color);
+  height: 42px;
 }
 
 .el-table td.el-table__cell {
   color: var(--text-primary);
   border-bottom-color: var(--color-gray-100);
+  height: 44px;
 }
 
 .el-table tr:hover > td.el-table__cell {
-  background-color: var(--color-gray-50) !important;
+  background-color: #f8fbff !important;
 }
 
 .el-table--striped .el-table__body tr.el-table__row--striped td.el-table__cell {
@@ -73,13 +78,14 @@
   color: var(--text-secondary);
   font-weight: 500;
   font-size: var(--text-sm);
+  padding-right: var(--space-2);
 }
 
 /* Unified form control heights - all inputs/selects/date pickers same height */
 .el-input__wrapper {
   border-radius: var(--radius-md);
-  padding: 0 12px;
-  height: 36px;
+  padding: 0 var(--space-3);
+  height: 34px;
   box-shadow: none !important;
   border: 1px solid var(--color-gray-200);
   transition: all var(--transition-fast);
@@ -92,12 +98,12 @@
 
 .el-input__wrapper.is-focus {
   border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(22, 134, 194, 0.12) !important;
 }
 
 .el-input__inner {
-  height: 36px;
-  line-height: 36px;
+  height: 34px;
+  line-height: 34px;
 }
 
 .el-textarea__inner {
@@ -113,32 +119,32 @@
 
 .el-textarea__inner:focus {
   border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  box-shadow: 0 0 0 3px rgba(22, 134, 194, 0.12);
 }
 
 .el-select .el-input__wrapper {
   cursor: pointer;
-  height: 36px;
-  padding: 0 12px;
+  height: 34px;
+  padding: 0 var(--space-3);
 }
 
 .el-select__wrapper {
-  height: 36px;
+  min-height: 34px;
 }
 
 .el-date-editor.el-input__wrapper {
-  height: 36px;
-  padding: 0 12px;
+  height: 34px;
+  padding: 0 var(--space-3);
 }
 
 .el-date-editor .el-input__inner {
-  height: 36px;
-  line-height: 36px;
+  height: 34px;
+  line-height: 34px;
 }
 
 .el-form--inline .el-form-item {
-  margin-right: var(--space-4);
-  margin-bottom: var(--space-3);
+  margin-right: 0;
+  margin-bottom: var(--space-2);
 }
 
 /* ===== Buttons ===== */
@@ -147,24 +153,33 @@
   font-weight: 500;
   font-size: var(--text-sm);
   transition: all var(--transition-fast);
+  min-height: 34px;
+}
+
+.el-button.is-circle {
+  min-height: var(--el-button-size);
+  width: var(--el-button-size);
+  height: var(--el-button-size);
+  padding: 0;
+  border-radius: 50%;
 }
 
 .el-button--primary {
   background: var(--color-primary-500);
   border-color: var(--color-primary-500);
-  box-shadow: 0 1px 2px rgba(59, 130, 246, 0.1);
+  box-shadow: none;
 }
 
 .el-button--primary:hover {
   background: var(--color-primary-600);
   border-color: var(--color-primary-600);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
-  transform: translateY(-1px);
+  box-shadow: none;
+  transform: none;
 }
 
 .el-button--primary:active {
   transform: translateY(0);
-  box-shadow: 0 1px 2px rgba(59, 130, 246, 0.1);
+  box-shadow: none;
 }
 
 .el-button--default {
@@ -182,6 +197,7 @@
 .el-button.is-link {
   padding: var(--space-1) var(--space-2);
   font-weight: 400;
+  min-height: auto;
 }
 
 .el-button.is-link:hover {
@@ -190,11 +206,11 @@
 
 /* ===== Pagination ===== */
 .el-pagination {
-  padding: var(--space-4) 0;
+  padding: var(--space-2) 0 0;
 }
 
 .el-pagination .el-pager li {
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-weight: 500;
   min-width: 32px;
   height: 32px;
@@ -212,7 +228,7 @@
 
 .el-pagination .btn-prev,
 .el-pagination .btn-next {
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   min-width: 32px;
   height: 32px;
 }
@@ -225,7 +241,7 @@
 }
 
 .el-dialog__header {
-  padding: var(--space-6) var(--space-6) var(--space-4);
+  padding: var(--space-5) var(--space-5) var(--space-4);
   border-bottom: var(--border-light);
   margin-right: 0;
 }
@@ -237,11 +253,11 @@
 }
 
 .el-dialog__body {
-  padding: var(--space-6);
+  padding: var(--space-5);
 }
 
 .el-dialog__footer {
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-4) var(--space-5);
   border-top: var(--border-light);
 }
 
@@ -251,4 +267,8 @@
   border: none;
   font-weight: 500;
   font-size: var(--text-xs);
+}
+
+.el-loading-mask {
+  backdrop-filter: blur(1px);
 }

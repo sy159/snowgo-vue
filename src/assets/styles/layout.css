@@ -1,70 +1,82 @@
 /* ===== Sidebar ===== */
 .sidebar {
   background-color: var(--bg-sidebar);
-  border-right: 1px solid var(--color-gray-300);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
   transition: width var(--transition-slow);
 }
 
 .logo {
-  height: 48px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-primary);
+  color: #fff;
   font-size: var(--text-lg);
   font-weight: 700;
-  letter-spacing: -0.02em;
-  border-bottom: 1px solid var(--color-gray-200);
-  background: var(--bg-surface);
+  letter-spacing: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111827;
 }
 
 .sidebar .el-menu {
+  background: var(--bg-sidebar) !important;
   border-right: none;
+  padding: var(--space-3) var(--space-2);
+}
+
+.sidebar .el-sub-menu .el-menu {
+  background: var(--bg-sidebar) !important;
 }
 
 .sidebar .el-menu-item {
+  background: transparent !important;
   color: var(--text-sidebar);
-  border-radius: var(--radius-sm);
-  margin: 1px 4px;
-  height: 40px;
-  line-height: 40px;
+  border-radius: var(--radius-md);
+  margin: 2px 0;
+  height: 38px;
+  line-height: 38px;
   transition: all var(--transition-fast);
 }
 
 .sidebar .el-menu-item:hover {
-  background-color: var(--bg-sidebar-hover);
-  color: var(--text-sidebar-active);
+  background: var(--bg-sidebar-hover) !important;
+  color: var(--text-sidebar-active) !important;
 }
 
 .sidebar .el-menu-item.is-active {
-  background-color: var(--bg-sidebar-active);
-  color: var(--text-sidebar-active);
-  font-weight: 500;
+  background: var(--bg-sidebar-active) !important;
+  color: var(--text-sidebar-active) !important;
+  font-weight: 600;
 }
 
 .sidebar .el-menu-item.is-active::before {
   content: '';
   position: absolute;
-  left: 0;
+  left: 4px;
   top: 50%;
   transform: translateY(-50%);
-  width: 3px;
-  height: 20px;
+  width: 2px;
+  height: 18px;
   background-color: var(--color-primary-500);
-  border-radius: 0 2px 2px 0;
+  border-radius: var(--radius-full);
 }
 
 .sidebar .el-sub-menu__title {
+  background: transparent !important;
   color: var(--text-sidebar);
-  border-radius: var(--radius-sm);
-  margin: 1px 4px;
-  height: 40px;
-  line-height: 40px;
+  border-radius: var(--radius-md);
+  margin: 2px 0;
+  height: 38px;
+  line-height: 38px;
 }
 
 .sidebar .el-sub-menu__title:hover {
-  background-color: var(--bg-sidebar-hover);
-  color: var(--text-sidebar-active);
+  background: var(--bg-sidebar-hover) !important;
+  color: var(--text-sidebar-active) !important;
+}
+
+.sidebar .el-sub-menu.is-active > .el-sub-menu__title {
+  color: var(--text-sidebar-active) !important;
 }
 
 /* ===== Header ===== */
@@ -74,20 +86,14 @@
   justify-content: space-between;
   background: var(--bg-surface);
   border-bottom: 1px solid var(--color-gray-200);
-  padding: 0 var(--space-6);
-  height: 64px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 0 var(--space-5);
+  height: 56px;
+  box-shadow: none;
   position: relative;
 }
 
 .header::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--color-gray-200);
+  content: none;
 }
 
 .header-left {
@@ -100,7 +106,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  font-size: var(--text-base);
+  font-size: var(--text-sm);
   color: var(--text-secondary);
 }
 
@@ -165,13 +171,24 @@
   padding: 0;
 }
 
+.user-management,
+.role-management,
+.menu-management,
+.dict-management,
+.operation-log-page,
+.login-log-page {
+  padding: var(--space-5);
+  background: var(--bg-page);
+  min-height: 100%;
+}
+
 /* ===== Search Card ===== */
 .search-card {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 .search-card .el-card__body {
-  padding: var(--space-4) var(--space-6);
+  padding: var(--space-4);
 }
 
 /* ===== Table Card ===== */
@@ -179,20 +196,41 @@
   border-color: var(--color-gray-200);
 }
 
+.operation-log-page > .el-card,
+.login-log-page > .el-card {
+  border-color: var(--color-gray-200);
+}
+
 /* ===== Pagination ===== */
 .pagination-wrapper {
   display: flex;
   justify-content: flex-end;
-  margin-top: 16px;
+  margin-top: var(--space-4);
 }
 
 /* ===== Search Form ===== */
 .search-form {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 12px;
+  gap: var(--space-2) var(--space-3);
+  align-items: flex-start;
 }
 
 .search-form .el-form-item:last-child {
   margin-left: auto;
+}
+
+@media (max-width: 960px) {
+  .user-management,
+  .role-management,
+  .menu-management,
+  .dict-management,
+  .operation-log-page,
+  .login-log-page {
+    padding: var(--space-4);
+  }
+
+  .search-form .el-form-item:last-child {
+    margin-left: 0;
+  }
 }

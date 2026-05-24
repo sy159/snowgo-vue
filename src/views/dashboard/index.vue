@@ -520,6 +520,11 @@ onUnmounted(() => {
 
 .hero-refresh {
   flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0;
+  border-radius: 50%;
 }
 
 /* ===== 资源占用 ===== */
